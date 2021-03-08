@@ -11,7 +11,7 @@
 * others
 	* numpy, pandas, Matplotlib...
 
-### Folders
+## Folders
 * scraping_datas
 	* storing scripts for scraping datas
 * datas
@@ -21,7 +21,7 @@
 * test
 	* Please ignore it, files in it is for me to test the scripts
 
-### Usage
+## Usage
 1. Scrape the data by running the jupyter notebooks in `scraping_datas`
 2. Move the data scraped to `datas`
 3. Run the jupyter notebooks in `scripts`
