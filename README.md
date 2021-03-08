@@ -12,13 +12,13 @@
 	* numpy, pandas, Matplotlib...
 
 ### Folders
-#### scraping_datas
+* scraping_datas
 	* storing scripts for scraping datas
-#### datas
+* datas
 	* storing datas scraped from the scripts in scraping_datas
-#### scripts
+* scripts
 	* storing the scripts for ml model or other things
-#### test
+* test
 	* Please ignore it, files in it is for me to test the scripts
 
 ### Usage
