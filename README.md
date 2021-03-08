@@ -1,23 +1,47 @@
 # Deep Reinforcement Learning in Cryptocurrency Algorithmic Trading
-I will upload my code to this github repo, The things inside it is still uncommented, I will explain what I've done later may be on 9/3/2021
 
-## folders and files
-The dataset is scraped using scripts in scraping_datas
-The dataset scraped is stored in datas
-The scripts for the algorithms is/ will be stored in scripts
-Please ignore the test directory, files in it is for me to test the scripts
 
-## things I've done
-I’ve followed https://github.com/guptarohit/cryptoCMD to scrape crypto OHLCV data of btc from https://coinmarketcap.com and store the data in btc_processed.csv.
-The scraping process is shown in crypto_scraper.ipynb
-The data are from 28/4/2013 - 7/3/2021
-Training set from 1/1/2014 - 31/12/2018
-Testing set from 1/1/2019 - 31/12/2020
+## Getting Started
+### Prerequisites
+* cryptoCMD
+	* `pip install git+git://github.com/guptarohit/cryptoCMD.git`
+* backtrader
+	* `pip install backtrader`
+	* `pip install backtrader[plotting]`
+* others
+	* numpy, pandas, Matplotlib...
 
-I may use the glassnode api to request data from glassnode later
-The process will be shown in glassnode_api.ipynb
+### Folders
+#### scraping_datas
+storing scripts for scraping datas
+#### datas
+storing datas scraped from the scripts in scraping_datas
+#### scripts
+storing the scripts for ml model or other things
+#### test
+Please ignore it, files in it is for me to test the scripts
 
-A library backtrader can be used to carry out backtesting on OHLC data.
-Csv files obtained above can be feeded to the model
-Info of the library can be found in https://www.backtrader.com/ 
-I have tried to use the library to backtest the data in btc_processed.csv using a strategy copied from the official documentation
+### Usage
+1. Scrape the data by running the jupyter notebooks in `scraping_datas`
+2. Move the data scraped to `datas`
+3. Run the jupyter notebooks in `scripts`
+
+## things I need to do
+- [x] scrape cryptocurrency OHLCV data of btc
+- [] scrape blockchain data from glassnode 
+- [x] try using backtrader to backtest the data  
+
+## things I need help
+- [] tell me what data from glassnode I need to scrape
+- [] check whether the data I scraped can be used
+- [] look at the backtest result to check whether the backtest is done correctly
+
+## Authors
+* [leehiulong](https://github.com/leehiulong)
+* [e](https://github.com/Nonug)
+* [johnnycls](https://github.com/johnnycls)
+
+## Acknowledgements
+[cryptoCMD](https://github.com/guptarohit/cryptoCMD)
+[glassnode](https://glassnode.com/)
+[backtrader](https://www.backtrader.com/)
