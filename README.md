@@ -15,14 +15,17 @@
 * **scraping_data**<br/>
 	storing scripts for scraping data
 * **data**<br/>
-	storing data scraped from the scripts in `scraping_data`
+	storing data scraped from the scripts in `scripts/scraping_data`
 * **scripts**<br/>
-	storing the scripts for ml model or other things
+	* scraping_data<br/>
+		storing the scripts for scraping data
+	* backtesting<br/>
+		storing the scripts for backtesting
 * **test**<br/>
 	Please ignore it, files in it is for me to test the scripts
 
 ## Usage
-1. Scrape the data by running the jupyter notebooks in `scraping_data`
+1. Scrape the data by running the jupyter notebooks in `scripts/scraping_data`
 2. Move the data scraped to `data`
 3. Run the jupyter notebooks in `scripts`
 
