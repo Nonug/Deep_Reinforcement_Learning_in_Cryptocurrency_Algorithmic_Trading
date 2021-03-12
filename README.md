@@ -12,29 +12,26 @@
 	* numpy, pandas, Matplotlib...
 
 ## Folders
-* scraping_datas
-	* storing scripts for scraping datas
-* datas
-	* storing datas scraped from the scripts in scraping_datas
+* scraping_data
+	* storing scripts for scraping data
+* data
+	* storing data scraped from the scripts in scraping_data
 * scripts
 	* storing the scripts for ml model or other things
 * test
 	* Please ignore it, files in it is for me to test the scripts
 
 ## Usage
-1. Scrape the data by running the jupyter notebooks in `scraping_datas`
-2. Move the data scraped to `datas`
+1. Scrape the data by running the jupyter notebooks in `scraping_data`
+2. Move the data scraped to `data`
 3. Run the jupyter notebooks in `scripts`
 
 ## things I need to do
 - [x] scrape cryptocurrency OHLCV data of btc
-- [ ] scrape blockchain data from glassnode 
-- [x] try using backtrader to backtest the data  
-
-## things I need help
-- [ ] tell me what data from glassnode I need to scrape
-- [ ] check whether the data I scraped can be used
-- [ ] look at the backtest result to check whether the backtest is done correctly
+- [x] scrape blockchain data from glassnode 
+- [x] try using backtrader to backtest the data 
+The following data are not able to be scraped due to different reasons shown in the `scraping_data/glassnode_api.ipynb`
+difficulty_ribbon, difficulty_latest, hash_rate_mean, hard, volume_median, utxo_count
 
 ## Authors
 * [leehiulong](https://github.com/leehiulong)
