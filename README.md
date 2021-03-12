@@ -15,7 +15,7 @@
 * scraping_data
 	* storing scripts for scraping data
 * data
-	* storing data scraped from the scripts in scraping_data
+	* storing data scraped from the scripts in `scraping_data`
 * scripts
 	* storing the scripts for ml model or other things
 * test
@@ -30,7 +30,7 @@
 - [x] scrape cryptocurrency OHLCV data of btc
 - [x] scrape blockchain data from glassnode 
 - [x] try using backtrader to backtest the data 
-The following data are not able to be scraped due to different reasons shown in the `scraping_data/glassnode_api.ipynb`
+* The following data are not able to be scraped due to different reasons shown in the `scraping_data/glassnode_api.ipynb`
 difficulty_ribbon, difficulty_latest, hash_rate_mean, hard, volume_median, utxo_count
 
 ## Authors
