@@ -3,22 +3,22 @@
 
 ## Getting Started
 ### Prerequisites
-* cryptoCMD<br/>
+* **cryptoCMD**<br/>
 	`pip install git+git://github.com/guptarohit/cryptoCMD.git`
-* backtrader<br/>
+* **backtrader**<br/>
 	`pip install backtrader`<br/>
 	`pip install backtrader[plotting]`
-* others<br/>
+* **others**<br/>
 	numpy, pandas, Matplotlib...
 
 ## Folders
-* scraping_data<br/>
+* **scraping_data**<br/>
 	storing scripts for scraping data
-* data<br/>
+* **data**<br/>
 	storing data scraped from the scripts in `scraping_data`
-* scripts<br/>
+* **scripts**<br/>
 	storing the scripts for ml model or other things
-* test<br/>
+* **test**<br/>
 	Please ignore it, files in it is for me to test the scripts
 
 ## Usage
