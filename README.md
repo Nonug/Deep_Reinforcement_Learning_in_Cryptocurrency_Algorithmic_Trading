@@ -3,36 +3,32 @@
 
 ## Getting Started
 ### Prerequisites
-* **cryptoCMD**<br/>
+* **cryptoCMD (may not be used)**<br/>
 	`pip install git+git://github.com/guptarohit/cryptoCMD.git`
 * **backtrader**<br/>
 	`pip install backtrader`<br/>
 	`pip install backtrader[plotting]`
 * **others**<br/>
-	numpy, pandas, Matplotlib...
-
-## Folders
-* **scraping_data**<br/>
-	storing scripts for scraping data
-* **data**<br/>
-	storing data scraped from the scripts in `scripts/scraping_data`
-* **scripts**<br/>
-	* scraping_data<br/>
-		storing the scripts for scraping data
-	* backtesting<br/>
-		storing the scripts for backtesting
-* **test**<br/>
-	Please ignore it, files in it is for me to test the scripts
+	numpy<br/>
+	pandas<br/>
+	Matplotlib<br/>
+	gym<br/>
+	pickle<br/>
+	tqdm<br/>
+	tabulate<br/>
+	torch<br/>
+	pandas.plotting<br/>
 
 ## Usage
-1. Scrape the data by running the jupyter notebooks in `scripts/scraping_data`
-2. Move the data scraped to `data`
-3. Run the jupyter notebooks in `scripts`
+1. Scrape the data by running the jupyter notebooks in `scraping_data`
+2. Run the jupyter notebooks in `preprocess` to preprocess and format the data
+3. Run the jupyter notebooks in `tdqn` to construct the tdqn model
 
-## things I need to do
+## things I have/haven't done
 - [x] scrape cryptocurrency OHLCV data of btc
 - [x] scrape blockchain data from glassnode 
-- [x] try using backtrader to backtest the data <br/>
+- [x] try using backtrader to backtest the data 
+- [ ] modified the tdqn for our data (half-finished)<br/>
 The following data are not able to be scraped due to different reasons shown in the `scraping_data/glassnode_api.ipynb`<br/>
 difficulty_ribbon, difficulty_latest, hash_rate_mean, hard, volume_median, utxo_count
 
@@ -45,3 +41,4 @@ difficulty_ribbon, difficulty_latest, hash_rate_mean, hard, volume_median, utxo_
 * [cryptoCMD](https://github.com/guptarohit/cryptoCMD)
 * [glassnode](https://glassnode.com/)
 * [backtrader](https://www.backtrader.com/)
+* [tdqn](https://github.com/ThibautTheate/An-Application-of-Deep-Reinforcement-Learning-to-Algorithmic-Trading)
