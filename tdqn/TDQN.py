@@ -587,7 +587,7 @@ class TDQN:
             self.policyNetwork.eval()
 
 
-    def training(self, trainingEnv, trainingParameters=[],
+    def training(self, trainingEnv, trainingParameters=[], endingDate='2019-01-01',
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the RL trading agent by interacting with its trading environment.
@@ -623,7 +623,6 @@ class TDQN:
             # Testing performance
             marketSymbol = trainingEnv.marketSymbol
             startingDate = trainingEnv.endingDate
-            endingDate = '2020-1-1'
             money = trainingEnv.data['Money'][0]
             stateLength = trainingEnv.stateLength
             transactionCosts = trainingEnv.transactionCosts
@@ -708,7 +707,7 @@ class TDQN:
                     analyser = PerformanceEstimator(testingEnv.data)
                     performance = analyser.computeSharpeRatio()
                     performanceTest.append(performance)
-                    self.writer.add_scalar('Testing performance (Sharpe Ratio)', performance, episode)
+                    self.writer.add_scalar('Validation performance (Sharpe Ratio)', performance, episode)
                     testingEnv.reset()
         
         except KeyboardInterrupt:
@@ -730,8 +729,8 @@ class TDQN:
             ax = fig.add_subplot(111, ylabel='Performance (Sharpe Ratio)', xlabel='Episode')
             ax.plot(performanceTrain)
             ax.plot(performanceTest)
-            ax.legend(["Training", "Testing"])
-            plt.savefig(''.join(['Figures/', str(marketSymbol), '_TrainingTestingPerformance', '.png']))
+            ax.legend(["Training", "Validation"])
+            plt.savefig(''.join(['Figures/', str(marketSymbol), '_TrainingValidationPerformance', '.png']))
             #plt.show()
             for i in range(len(trainingEnvList)):
                 self.plotTraining(score[i][:episode], marketSymbol)
@@ -870,7 +869,7 @@ class TDQN:
         # Initialization of the testing trading environment
         marketSymbol = trainingEnv.marketSymbol
         startingDate = trainingEnv.endingDate
-        endingDate = '2020-1-1'
+        endingDate = '2020-01-01'
         money = trainingEnv.data['Money'][0]
         stateLength = trainingEnv.stateLength
         transactionCosts = trainingEnv.transactionCosts

@@ -56,7 +56,7 @@ class tradingStrategy(ABC):
     
 
     @abstractmethod
-    def training(self, trainingEnv, trainingParameters=[],
+    def training(self, trainingEnv, trainingParameters=[], endingDate='2020-01-01',
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -135,7 +135,7 @@ class BuyAndHold(tradingStrategy):
         return 1
     
 
-    def training(self, trainingEnv, trainingParameters=[],
+    def training(self, trainingEnv, trainingParameters=[], endingDate='2020-01-01',
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -257,7 +257,7 @@ class SellAndHold(tradingStrategy):
         return 0
     
 
-    def training(self, trainingEnv, trainingParameters=[],
+    def training(self, trainingEnv, trainingParameters=[], endingDate='2020-01-01',
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -433,7 +433,7 @@ class MovingAveragesTF(tradingStrategy):
             return 0
     
 
-    def training(self, trainingEnv, trainingParameters=[],
+    def training(self, trainingEnv, trainingParameters=[], endingDate='2020-01-01',
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -707,7 +707,7 @@ class MovingAveragesMR(tradingStrategy):
             return 0
     
 
-    def training(self, trainingEnv, trainingParameters=[],
+    def training(self, trainingEnv, trainingParameters=[], endingDate='2020-01-01',
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment

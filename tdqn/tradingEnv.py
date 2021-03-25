@@ -53,7 +53,7 @@ class TradingEnv(gym.Env):
         """
         # Real stock loading
         # Check if the stock market data is already present in the database
-        csvPath = "".join(['../data/', marketSymbol, '_ohlcv.csv'])
+        csvPath = "".join(['../data/', marketSymbol, '_', startingDate, '_', endingDate])
         exists = os.path.isfile(csvPath)
 
         # If affirmative, load the stock market data from the database

@@ -14,13 +14,9 @@ from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
 from tradingEnv import TradingEnv
+from timeSeriesAnalyser import TimeSeriesAnalyser
 from tradingPerformance import PerformanceEstimator
 from TDQN import TDQN
-
-# Variables defining the default trading horizon
-startingDate = '2014-1-1'
-endingDate = '2020-12-31'
-splitingDate = '2019-1-1'
 
 # Variables defining the default observation and state spaces
 stateLength = 30
@@ -62,28 +58,56 @@ class TradingSimulator:
     METHODS:   - simulateNewStrategy: Simulate a new trading strategy on a certain cryptocurrency of the testbench.
                - simulateExistingStrategy: Simulate an already existing trading strategy on a certain cryptocurrency 
                                            of the testbench.
-               - evaluateStrategy: Evaluate a trading strategy on the entire testbench.
-               - evaluatecryptocurrency: Compare different trading strategies on a certain cryptocurrency of the testbench.
-    """
-
-    def plotEntireTrading(self, trainingEnv, testingEnv):
+   """
+    def analyseTimeSeries(self, cryptocurrencyName, startingDate, endingDate):           
         """
-        GOAL: Plot the entire trading activity, with both the training
-              and testing phases rendered on the same graph for
-              comparison purposes.
+        GOAL: Perform a detailled analysis of the stock market
+              price time series.
         
-        INPUTS: - trainingEnv: Trading environment for training.
-                - testingEnv: Trading environment for testing.
+        INPUTS: - cryptocurrencyName: Name of the cryptocurrency (in the testbench).
+                - startingDate: Beginning of the trading horizon.
+                - endingDate: Ending of the trading horizon.
         
         OUTPUTS: /
         """
 
+        # Retrieve the trading cryptocurrencies information
+        if(cryptocurrencyName in cryptocurrencies):
+            cryptocurrency = cryptocurrencies[cryptocurrencyName]   
+        # Error message if the cryptocurrency specified is not valid or not supported
+        else:
+            print("The cryptocurrency specified is not valid, only the following cryptocurrencies are supported:")
+            for cryptocurrency in cryptocurrencies:
+                print("".join(['- ', cryptocurrency]))
+            raise SystemError("Please check the cryptocurrency specified.")
+        
+        # ENTIRE TRADING DATA
+        print("\n\n\nAnalysis of the entire time series (both training and testing phases)")
+        print("---------------------------------------------------------------------\n")
+        tradingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, 0)
+        timeSeries = tradingEnv.data['Close']
+        analyser = TimeSeriesAnalyser(timeSeries)
+        analyser.timeSeriesDecomposition()
+        analyser.stationarityAnalysis()
+        analyser.cyclicityAnalysis()
+
+    def plotEntireTrading(self, trainingEnv, validationEnv, name, splitingDate):
+        """
+        GOAL: Plot the entire trading activity, with both the training
+              and testing/validation phases rendered on the same graph for
+              comparison purposes.
+        
+        INPUTS: - trainingEnv: Trading environment for training.
+                - testing/validationEnv: Trading environment for validation.
+        
+        OUTPUTS: /
+        """
         # Artificial trick to assert the continuity of the Money curve
-        ratio = trainingEnv.data['Money'][-1]/testingEnv.data['Money'][0]
-        testingEnv.data['Money'] = ratio * testingEnv.data['Money']
+        ratio = trainingEnv.data['Money'][-1]/validationEnv.data['Money'][0]
+        validationEnv.data['Money'] = ratio * validationEnv.data['Money']
 
         # Concatenation of the training and testing trading dataframes
-        dataframes = [trainingEnv.data, testingEnv.data]
+        dataframes = [trainingEnv.data, validationEnv.data]
         data = pd.concat(dataframes)
 
         # Set the Matplotlib figure and subplots
@@ -93,7 +117,7 @@ class TradingSimulator:
 
         # Plot the first graph -> Evolution of the cryptocurrency market price
         trainingEnv.data['Close'].plot(ax=ax1, color='blue', lw=2)
-        testingEnv.data['Close'].plot(ax=ax1, color='blue', lw=2, label='_nolegend_') 
+        validationEnv.data['Close'].plot(ax=ax1, color='blue', lw=2, label='_nolegend_') 
         ax1.plot(data.loc[data['Action'] == 1.0].index, 
                  data['Close'][data['Action'] == 1.0],
                  '^', markersize=5, color='green')   
@@ -103,7 +127,7 @@ class TradingSimulator:
         
         # Plot the second graph -> Evolution of the trading capital
         trainingEnv.data['Money'].plot(ax=ax2, color='blue', lw=2)
-        testingEnv.data['Money'].plot(ax=ax2, color='blue', lw=2, label='_nolegend_') 
+        validationEnv.data['Money'].plot(ax=ax2, color='blue', lw=2, label='_nolegend_') 
         ax2.plot(data.loc[data['Action'] == 1.0].index, 
                  data['Money'][data['Action'] == 1.0],
                  '^', markersize=5, color='green')   
@@ -116,38 +140,28 @@ class TradingSimulator:
         ax2.axvline(pd.Timestamp(splitingDate), color='black', linewidth=2.0)
         
         # Generation of the two legends and plotting
-        ax1.legend(["Price", "Long",  "Short", "Train/Test separation"])
-        ax2.legend(["Capital", "Long", "Short", "Train/Test separation"])
-        plt.savefig(''.join(['Figures/', str(trainingEnv.marketSymbol), '_TrainingTestingRendering', '.png'])) 
+        ax1.legend(["Price", "Long",  "Short", "Train/"+name+" separation"])
+        ax2.legend(["Capital", "Long", "Short", "Train/"+name+" separation"])
+        plt.savefig(''.join(['Figures/', str(trainingEnv.marketSymbol), '_Training', name, 'Rendering', '.png'])) 
         #plt.show()
 
 
-    def simulateNewStrategy(self, strategyName, cryptocurrencyName,
-                            startingDate=startingDate, endingDate=endingDate, splitingDate=splitingDate,
-                            observationSpace=observationSpace, actionSpace=actionSpace, 
-                            money=money, stateLength=stateLength, transactionCosts=transactionCosts,
-                            bounds=bounds, step=step, numberOfEpisodes=numberOfEpisodes,
-                            verbose=True, plotTraining=True, rendering=True, showPerformance=True,
-                            saveStrategy=False):
+    def trainAndValidate(self, strategyName, cryptocurrencyName, PARAM, observationSpace=observationSpace, 
+        actionSpace=actionSpace, stateLength=stateLength, transactionCosts=transactionCosts, bounds=bounds, 
+        step=step, verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True):
         """
         GOAL: Simulate a new trading strategy on a certain cryptocurrency included in the
-              testbench, with both learning and testing phases.
+              testbench, with both learning and validation phases.
         
         INPUTS: - strategyName: Name of the trading strategy.
                 - cryptocurrencyName: Name of the cryptocurrency (in the testbench).
-                - startingDate: Beginning of the trading horizon.
-                - endingDate: Ending of the trading horizon.
-                - splitingDate: Spliting date between the training dataset
-                                and the testing dataset.
                 - observationSpace: Size of the RL observation space.
                 - actionSpace: Size of the RL action space.
-                - money: Initial capital at the disposal of the agent.
                 - stateLength: Length of the trading agent state.
                 - transactionCosts: Additional costs incurred while trading
                                     (e.g. 0.01 <=> 1% of transaction costs).
                 - bounds: Bounds of the parameter search space (training).
                 - step: Step of the parameter search space (training).
-                - numberOfEpisodes: Number of epsiodes of the RL training phase.
                 - verbose: Enable the printing of a simulation feedback.
                 - plotTraining: Enable the plotting of the training results.
                 - rendering: Enable the rendering of the trading environment.
@@ -157,10 +171,14 @@ class TradingSimulator:
         
         OUTPUTS: - tradingStrategy: Trading strategy simulated.
                  - trainingEnv: Trading environment related to the training phase.
-                 - testingEnv: Trading environment related to the testing phase.
+                 - validationEnv
         """
 
         # 1. INITIALIZATION PHASE
+        startingDate = PARAM['startingDate']
+        endingDate = PARAM['endingDate']
+        splitingDate = PARAM['splitingDate']
+        money = PARAM['money']
         # Retrieve the trading strategy information
         if(strategyName in strategies):
             strategy = strategies[strategyName]
@@ -168,8 +186,19 @@ class TradingSimulator:
             ai = False
         elif(strategyName in strategiesAI):
             strategy = strategiesAI[strategyName]
-            trainingParameters = [numberOfEpisodes]
             ai = True
+            numberOfEpisodes = PARAM['numberOfEpisodes']
+            trainingParameters = [numberOfEpisodes]
+            gamma = PARAM['gamma']
+            learningRate = PARAM['learningRate']
+            targetNetworkUpdate = PARAM['targetNetworkUpdate']
+            learningUpdatePeriod = PARAM['learningUpdatePeriod']
+            capacity = PARAM['capacity']
+            batchSize = PARAM['batchSize']
+            experiencesRequired = PARAM['experiencesRequired']
+            epsilonStart = PARAM['epsilonStart']
+            epsilonEnd = PARAM['epsilonEnd']
+            epsilonDecay = PARAM['epsilonDecay']
         # Error message if the strategy specified is not valid or not supported
         else:
             print("The strategy specified is not valid, only the following strategies are supported:")
@@ -198,7 +227,10 @@ class TradingSimulator:
         if ai:
             strategyModule = importlib.import_module(str(strategy))
             className = getattr(strategyModule, strategy)
-            tradingStrategy = className(observationSpace, actionSpace)
+            tradingStrategy = className(observationSpace, actionSpace, gamma=gamma, learningRate=learningRate,
+                                        targetNetworkUpdate=targetNetworkUpdate, epsilonStart=epsilonStart, 
+                                        epsilonEnd=epsilonEnd, epsilonDecay=epsilonDecay, capacity=capacity, 
+                                        batchSize=batchSize)
         else:
             strategyModule = importlib.import_module('classicalStrategy')
             className = getattr(strategyModule, strategy)
@@ -206,24 +238,25 @@ class TradingSimulator:
 
         # Training of the trading strategy
         trainingEnv = tradingStrategy.training(trainingEnv, trainingParameters=trainingParameters,
-                                               verbose=verbose, rendering=rendering,
+                                               endingDate=endingDate, verbose=verbose, rendering=rendering,
                                                plotTraining=plotTraining, showPerformance=showPerformance)
         
-        # 3. TESTING PHASE
-        # Initialize the trading environment associated with the testing phase
-        testingEnv = TradingEnv(cryptocurrency, splitingDate, endingDate, money, stateLength, transactionCosts)
+        # 3. VALIDATION PHASE
 
-        # Testing of the trading strategy
-        testingEnv = tradingStrategy.testing(trainingEnv, testingEnv, rendering=rendering, showPerformance=showPerformance)
+        # Initialize the trading environment associated with the validation phase
+        validationEnv = TradingEnv(cryptocurrency, splitingDate, endingDate, money, stateLength, transactionCosts)
 
-        # Show the entire unified rendering of the training and testing phases
+        # Validation of the trading strategy
+        validationEnv = tradingStrategy.testing(trainingEnv, validationEnv, rendering=rendering, showPerformance=showPerformance)
+            
+        # Show the entire unified rendering of the training and validation phases
         if rendering:
-            self.plotEntireTrading(trainingEnv, testingEnv)
+            self.plotEntireTrading(trainingEnv, validationEnv, 'Validation', splitingDate)
 
         # 4. TERMINATION PHASE
         # If required, save the trading strategy with Pickle
         if(saveStrategy):
-            fileName = "".join(["Strategies/", strategy, "_", cryptocurrency, "_", startingDate, "_", splitingDate])
+            fileName = "".join(["Strategies/", strategy, "_", cryptocurrency, "_", startingDate, "_", endingDate])
             if ai:
                 tradingStrategy.saveModel(fileName)
             else:
@@ -231,14 +264,12 @@ class TradingSimulator:
                 pickle.dump(tradingStrategy, fileHandler)
 
         # Return of the trading strategy simulated and of the trading environments backtested
-        return tradingStrategy, trainingEnv, testingEnv
+        return tradingStrategy, trainingEnv, validationEnv
 
     
-    def simulateExistingStrategy(self, strategyName, cryptocurrencyName,
-                                 startingDate=startingDate, endingDate=endingDate, splitingDate=splitingDate,
-                                 observationSpace=observationSpace, actionSpace=actionSpace, 
-                                 money=money, stateLength=stateLength, transactionCosts=transactionCosts,
-                                 rendering=True, showPerformance=True):
+    def test(self, strategyName, cryptocurrencyName, PARAM, observationSpace=observationSpace, 
+            actionSpace=actionSpace, stateLength=stateLength, transactionCosts=transactionCosts,
+            rendering=True, showPerformance=True):
         """
         GOAL: Simulate an already existing trading strategy on a certain
               cryptocurrency of the testbench, the strategy being loaded from the
@@ -247,13 +278,8 @@ class TradingSimulator:
         
         INPUTS: - strategyName: Name of the trading strategy.
                 - cryptocurrencyName: Name of the cryptocurrency (in the testbench).
-                - startingDate: Beginning of the trading horizon.
-                - endingDate: Ending of the trading horizon.
-                - splitingDate: Spliting date between the training dataset
-                                and the testing dataset.
                 - observationSpace: Size of the RL observation space.
                 - actionSpace: Size of the RL action space.
-                - money: Initial capital at the disposal of the agent.
                 - stateLength: Length of the trading agent state.
                 - transactionCosts: Additional costs incurred while trading
                                     (e.g. 0.01 <=> 1% of transaction costs).
@@ -265,7 +291,10 @@ class TradingSimulator:
                  - trainingEnv: Trading environment related to the training phase.
                  - testingEnv: Trading environment related to the testing phase.
         """
-
+        startingDate = PARAM['startingDate']
+        endingDate = PARAM['endingDate']
+        splitingDate = PARAM['splitingDate']
+        money = PARAM['money']
         # 1. INITIALIZATION PHASE
 
         # Retrieve the trading strategy information
@@ -313,7 +342,6 @@ class TradingSimulator:
 
 
         # 3. TESTING PHASE
-
         # Initialize the trading environments associated with the testing phase
         trainingEnv = TradingEnv(cryptocurrency, startingDate, splitingDate, money, stateLength, transactionCosts)
         testingEnv = TradingEnv(cryptocurrency, splitingDate, endingDate, money, stateLength, transactionCosts)
@@ -324,145 +352,6 @@ class TradingSimulator:
 
         # Show the entire unified rendering of the training and testing phases
         if rendering:
-            self.plotEntireTrading(trainingEnv, testingEnv)
-
+            self.plotEntireTrading(trainingEnv, testingEnv, 'Testing', splitingDate)
+            
         return tradingStrategy, trainingEnv, testingEnv
-
-
-    def evaluateStrategy(self, strategyName,
-                         startingDate=startingDate, endingDate=endingDate, splitingDate=splitingDate,
-                         observationSpace=observationSpace, actionSpace=actionSpace, 
-                         money=money, stateLength=stateLength, transactionCosts=transactionCosts,
-                         bounds=bounds, step=step, numberOfEpisodes=numberOfEpisodes,
-                         verbose=False, plotTraining=False, rendering=False, showPerformance=False,
-                         saveStrategy=False):
-        """
-        GOAL: Evaluate the performance of a trading strategy on the entire
-              testbench of cryptocurrencies designed.
-        
-        INPUTS: - strategyName: Name of the trading strategy.
-                - startingDate: Beginning of the trading horizon.
-                - endingDate: Ending of the trading horizon.
-                - splitingDate: Spliting date between the training dataset
-                                and the testing dataset.
-                - observationSpace: Size of the RL observation space.
-                - actionSpace: Size of the RL action space.
-                - money: Initial capital at the disposal of the agent.
-                - stateLength: Length of the trading agent state.
-                - transactionCosts: Additional costs incurred while trading
-                                    (e.g. 0.01 <=> 1% of transaction costs).
-                - bounds: Bounds of the parameter search space (training).
-                - step: Step of the parameter search space (training).
-                - numberOfEpisodes: Number of epsiodes of the RL training phase.
-                - verbose: Enable the printing of simulation feedbacks.
-                - plotTraining: Enable the plotting of the training results.
-                - rendering: Enable the rendering of the trading environment.
-                - showPerformance: Enable the printing of a table summarizing
-                                   the trading strategy performance.
-                - saveStrategy: Enable the saving of the trading strategy.
-        
-        OUTPUTS: - performanceTable: Table summarizing the performance of
-                                     a trading strategy.
-        """
-
-        # Initialization of some variables
-        performanceTable = [["Profit & Loss (P&L)"], ["Annualized Return"], ["Annualized Volatility"], ["Sharpe Ratio"], ["Sortino Ratio"], ["Maximum DrawDown"], ["Maximum DrawDown Duration"], ["Profitability"], ["Ratio Average Profit/Loss"], ["Skewness"]]
-        headers = ["Performance Indicator"]
-
-        # Loop through each cryptocurrency included in the testbench (progress bar)
-        print("Trading strategy evaluation progression:")
-        for cryptocurrency in tqdm(cryptocurrencies):
-
-            # Simulation of the trading strategy on the current cryptocurrency
-            try:
-                # Simulate an already existing trading strategy on the current cryptocurrency
-                _, _, testingEnv = self.simulateExistingStrategy(strategyName, cryptocurrency, startingDate, endingDate, splitingDate, observationSpace, actionSpace, money, stateLength, transactionCosts, rendering, showPerformance)
-            except SystemError:
-                # Simulate a new trading strategy on the current cryptocurrency
-                _, _, testingEnv = self.simulateNewStrategy(strategyName, cryptocurrency, startingDate, endingDate, splitingDate, observationSpace, actionSpace, money, stateLength, transactionCosts, bounds, step, numberOfEpisodes, verbose, plotTraining, rendering, showPerformance, saveStrategy)
-
-            # Retrieve the trading performance associated with the trading strategy
-            analyser = PerformanceEstimator(testingEnv.data)
-            performance = analyser.computePerformance()
-            
-            # Get the required format for the display of the performance table
-            headers.append(cryptocurrency)
-            for i in range(len(performanceTable)):
-                performanceTable[i].append(performance[i][1])
-
-        # Display the performance table computed
-        tabulation = tabulate(performanceTable, headers, tablefmt="fancy_grid", stralign="center")
-        print(tabulation)
-
-        # Computation of the average Sharpe Ratio (default performance indicator)
-        sharpeRatio = np.mean([float(item) for item in performanceTable[3][1:]])
-        print("Average Sharpe Ratio: " + "{0:.3f}".format(sharpeRatio))
-
-        return performanceTable
-
-
-    def evaluatecryptocurrency(self, cryptocurrencyName,
-                      startingDate=startingDate, endingDate=endingDate, splitingDate=splitingDate,
-                      observationSpace=observationSpace, actionSpace=actionSpace,  
-                      money=money, stateLength=stateLength, transactionCosts=transactionCosts,
-                      bounds=bounds, step=step, numberOfEpisodes=numberOfEpisodes,
-                      verbose=False, plotTraining=False, rendering=False, showPerformance=False,
-                      saveStrategy=False):
-
-        """
-        GOAL: Simulate and compare the performance achieved by all the supported
-              trading strategies on a certain cryptocurrency of the testbench.
-        
-        INPUTS: - cryptocurrencyName: Name of the cryptocurrency (in the testbench).
-                - startingDate: Beginning of the trading horizon.
-                - endingDate: Ending of the trading horizon.
-                - splitingDate: Spliting date between the training dataset
-                                and the testing dataset.
-                - money: Initial capital at the disposal of the agent.
-                - stateLength: Length of the trading agent state.
-                - transactionCosts: Additional costs incurred while trading
-                                    (e.g. 0.01 <=> 1% of transaction costs).
-                - bounds: Bounds of the parameter search space (training).
-                - step: Step of the parameter search space (training).
-                - numberOfEpisodes: Number of epsiodes of the RL training phase.
-                - verbose: Enable the printing of a simulation feedback.
-                - plotTraining: Enable the plotting of the training results.
-                - rendering: Enable the rendering of the trading environment.
-                - showPerformance: Enable the printing of a table summarizing
-                                   the trading strategy performance.
-                - saveStrategy: Enable the saving of the trading strategy.
-        
-        OUTPUTS: - performanceTable: Table summarizing the performance of
-                                     a trading strategy.
-        """
-
-        # Initialization of some variables
-        performanceTable = [["Profit & Loss (P&L)"], ["Annualized Return"], ["Annualized Volatility"], ["Sharpe Ratio"], ["Sortino Ratio"], ["Maximum DrawDown"], ["Maximum DrawDown Duration"], ["Profitability"], ["Ratio Average Profit/Loss"], ["Skewness"]]
-        headers = ["Performance Indicator"]
-
-        # Loop through all the trading strategies supported (progress bar)
-        print("Trading strategies evaluation progression:")
-        for strategy in tqdm(itertools.chain(strategies, strategiesAI)):
-
-            # Simulation of the current trading strategy on the cryptocurrency
-            try:
-                # Simulate an already existing trading strategy on the cryptocurrency
-                _, _, testingEnv = self.simulateExistingStrategy(strategy, cryptocurrencyName, startingDate, endingDate, splitingDate, observationSpace, actionSpace, money, stateLength, transactionCosts, rendering, showPerformance)
-            except SystemError:
-                # Simulate a new trading strategy on the cryptocurrency
-                _, _, testingEnv = self.simulateNewStrategy(strategy, cryptocurrencyName, startingDate, endingDate, splitingDate, observationSpace, actionSpace, money, stateLength, transactionCosts, bounds, step, numberOfEpisodes, verbose, plotTraining, rendering, showPerformance, saveStrategy)
-
-            # Retrieve the trading performance associated with the trading strategy
-            analyser = PerformanceEstimator(testingEnv.data)
-            performance = analyser.computePerformance()
-            
-            # Get the required format for the display of the performance table
-            headers.append(strategy)
-            for i in range(len(performanceTable)):
-                performanceTable[i].append(performance[i][1])
-
-        # Display the performance table
-        tabulation = tabulate(performanceTable, headers, tablefmt="fancy_grid", stralign="center")
-        print(tabulation)
-
-        return performanceTable
