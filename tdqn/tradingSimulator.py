@@ -37,7 +37,8 @@ numberOfEpisodes = 50
 
 # Dictionary listing the cryptocurrencies supported
 cryptocurrencies = {
-    'Bitcoin' : 'btc',
+    'Bitcoin': 'btc',
+    'Google': 'GOOGL',
 }
 
 # Dictionary listing the classical trading strategies supported

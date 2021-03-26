@@ -20,17 +20,18 @@
 	pandas.plotting<br/>
 
 ## Usage
-1. Scrape the data by running the jupyter notebooks in `scraping_data`
-2. Run the jupyter notebooks in `preprocess` to preprocess and format the data
-3. Run the jupyter notebooks in `tdqn` to construct the tdqn model
+1. Run the jupyter notebooks in `tdqn` to construct the tdqn model
 
 ## things I have/haven't done
 - [x] scrape cryptocurrency OHLCV data of btc
 - [x] scrape blockchain data from glassnode 
 - [x] try using backtrader to backtest the data 
 - [ ] modified the tdqn for our data (half-finished)<br/>
-The following data are not able to be scraped due to different reasons shown in the `scraping_data/glassnode_api.ipynb`<br/>
-difficulty_ribbon, difficulty_latest, hash_rate_mean, hard, volume_median, utxo_count
+
+## problems
+* The following data are not able to be scraped due to different reasons shown in the `scraping_data/glassnode_api.ipynb`<br/>
+    *difficulty_ribbon, difficulty_latest, hash_rate_mean, hard, volume_median, utxo_count
+* The plot of stock data and crypto data are different because of unknown reason. 
 
 ## Authors
 * [leehiulong](https://github.com/leehiulong)
