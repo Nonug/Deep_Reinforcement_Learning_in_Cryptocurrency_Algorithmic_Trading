@@ -3,6 +3,7 @@ import math
 import random
 import copy
 import datetime
+from pathlib import Path
 
 import numpy as np
 
@@ -346,7 +347,10 @@ class TDQN:
         self.iterations = 0
 
         # Initialization of the tensorboard writer
-        self.writer = SummaryWriter(os.path.join('runs', datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")))
+        log_dir = datetime.datetime.now().strftime("%m-%d-%H_%M_%S")
+        training_log_dir_path = Path((os.path.join(".", "runs", log_dir)))
+        training_log_dir = str(training_log_dir_path)
+        self.writer = SummaryWriter(training_log_dir_path)
 
     
     def getNormalizationCoefficients(self, tradingEnv):
