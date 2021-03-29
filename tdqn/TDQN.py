@@ -1,3 +1,4 @@
+import os
 import math
 import random
 import copy
@@ -345,7 +346,7 @@ class TDQN:
         self.iterations = 0
 
         # Initialization of the tensorboard writer
-        self.writer = SummaryWriter('runs/' + datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S"))
+        self.writer = SummaryWriter(os.path.join('runs', datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")))
 
     
     def getNormalizationCoefficients(self, tradingEnv):
@@ -799,7 +800,7 @@ class TDQN:
         if showPerformance:
             analyser = PerformanceEstimator(testingEnv.data)
             analyser.displayPerformance('TDQN')
-        
+
         return testingEnv
 
 

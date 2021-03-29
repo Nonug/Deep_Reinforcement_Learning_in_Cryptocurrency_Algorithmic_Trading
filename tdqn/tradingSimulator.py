@@ -39,6 +39,7 @@ numberOfEpisodes = 50
 cryptocurrencies = {
     'Bitcoin': 'btc',
     'Google': 'GOOGL',
+    'Apple': 'AAPL'
 }
 
 # Dictionary listing the classical trading strategies supported
@@ -143,8 +144,9 @@ class TradingSimulator:
         # Generation of the two legends and plotting
         ax1.legend(["Price", "Long",  "Short", "Train/"+name+" separation"])
         ax2.legend(["Capital", "Long", "Short", "Train/"+name+" separation"])
-        plt.savefig(''.join(['Figures/', str(trainingEnv.marketSymbol), '_Training', name, 'Rendering', '.png'])) 
+        plt.savefig(os.path.join('Figures',str(trainingEnv.marketSymbol)+'_Training'+name+'Rendering.png')) 
         #plt.show()
+
 
 
     def trainAndValidate(self, strategyName, cryptocurrencyName, PARAM, observationSpace=observationSpace, 
@@ -257,7 +259,7 @@ class TradingSimulator:
         # 4. TERMINATION PHASE
         # If required, save the trading strategy with Pickle
         if(saveStrategy):
-            fileName = "".join(["Strategies/", strategy, "_", cryptocurrency, "_", startingDate, "_", endingDate])
+            fileName = os.path.join("Strategies", strategy+'_'+cryptocurrency+'_'+startingDate+'_'+endingDate)
             if ai:
                 tradingStrategy.saveModel(fileName)
             else:
@@ -326,7 +328,7 @@ class TradingSimulator:
 
         # 2. LOADING PHASE    
         # Check that the strategy to load exists in the strategy dataset
-        fileName = "".join(["Strategies/", strategy, "_", cryptocurrency, "_", startingDate, "_", splitingDate])
+        fileName = os.path.join("Strategies", strategy+'_'+cryptocurrency+'_'+startingDate+'_'+splitingDate)
         exists = os.path.isfile(fileName)
         # If affirmative, load the trading strategy
         if exists:
@@ -355,4 +357,9 @@ class TradingSimulator:
         if rendering:
             self.plotEntireTrading(trainingEnv, testingEnv, 'Testing', splitingDate)
             
+        # log training result
+        path = os.path.join('log', 'test.csv')
+        logDF = testingEnv.data
+        logDF.to_csv(path)
+
         return tradingStrategy, trainingEnv, testingEnv

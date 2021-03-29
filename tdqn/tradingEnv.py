@@ -53,7 +53,7 @@ class TradingEnv(gym.Env):
         """
         # Real stock loading
         # Check if the stock market data is already present in the database
-        csvPath = "".join(['../data/', marketSymbol, '_', startingDate, '_', endingDate, '.csv'])
+        csvPath = os.path.join('..','data',marketSymbol+'_'+startingDate+'_'+endingDate+'.csv')
         exists = os.path.isfile(csvPath)
 
         # If affirmative, load the stock market data from the database
@@ -340,7 +340,7 @@ class TradingEnv(gym.Env):
         # Generation of the two legends and plotting
         ax1.legend(["Price", "Long",  "Short"])
         ax2.legend(["Capital", "Long", "Short"])
-        plt.savefig(''.join(['Figures/', str(self.marketSymbol), '_Rendering', '.png']))
+        plt.savefig(os.path.join('Figures', str(self.marketSymbol)+'_Rendering.png'))
         #plt.show()
 
 
