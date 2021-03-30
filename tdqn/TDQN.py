@@ -631,7 +631,7 @@ class TDQN:
             money = trainingEnv.data['Money'][0]
             stateLength = trainingEnv.stateLength
             transactionCosts = trainingEnv.transactionCosts
-            testingEnv = TradingEnv(marketSymbol, startingDate, endingDate, money, stateLength, transactionCosts)
+            testingEnv = TradingEnv(marketSymbol, startingDate, endingDate, money, stateLength=stateLength, transactionCosts=transactionCosts)
             performanceTest = []
 
         try:
@@ -649,7 +649,6 @@ class TDQN:
                     coefficients = self.getNormalizationCoefficients(trainingEnvList[i])
                     trainingEnvList[i].reset()
                     startingPoint = random.randrange(len(trainingEnvList[i].data.index))
-                    trainingEnvList[i].setStartingPoint(startingPoint)
                     state = self.processState(trainingEnvList[i].state, coefficients)
                     previousAction = 0
                     done = 0
@@ -901,7 +900,6 @@ class TDQN:
                         coefficients = self.getNormalizationCoefficients(trainingEnvList[i])
                         trainingEnvList[i].reset()
                         startingPoint = random.randrange(len(trainingEnvList[i].data.index))
-                        trainingEnvList[i].setStartingPoint(startingPoint)
                         state = self.processState(trainingEnvList[i].state, coefficients)
                         previousAction = 0
                         done = 0
