@@ -109,10 +109,10 @@ class ExploratoryDataAnalysis:
 		upper_band, lower_band = self.get_bollinger_bands(rm, rstd)
 
 		plt.figure(figsize=(10,6))
-		ax = self.timeSeries.plot(title = self.symbol+" Bollinger Band")
-		rm.plot(label='Rolling Mean', ax=ax)
-		upper_band.plot(label='Upper Band', ax=ax)
-		lower_band.plot(label='Lower Band', ax=ax)
+		ax = self.timeSeries.plot(title = self.symbol+" Bollinger Band", lw=1)
+		rm.plot(label='Rolling Mean', ax=ax, lw=1)
+		upper_band.plot(label='Upper Band', ax=ax, lw=1)
+		lower_band.plot(label='Lower Band', ax=ax, lw=1)
 		plt.legend(loc='upper left')
 
 
@@ -127,6 +127,7 @@ class ExploratoryDataAnalysis:
 
 	def plot_scarcity(self):
 		plt.figure(figsize=(10, 4))
-		plt.plot(self.stock_to_flow.values, self.timeSeries.values, color='blue')
+		# plt.plot(self.stock_to_flow.values, self.timeSeries.values, color='blue')
+		plt.loglog(self.stock_to_flow.values, self.timeSeries.values)
 		plt.xlabel("stock-to-flow (scarcity)")
 		plt.ylabel("market value")

@@ -51,7 +51,7 @@ class TradingSimulator:
         analyser.plotTimeSeries()
         analyser.plot_daily_returns()
         analyser.augmentedDickeyFullerTest()
-        analyser.bollingerBandStrategy1()
+        # analyser.bollingerBandStrategy1()
         analyser.bollingerBandStrategy2()
         analyser.plot_scarcity()
 

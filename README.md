@@ -10,6 +10,7 @@ gym<br/>
 tqdm<br/>
 tabulate<br/>
 torch<br/>
+etherscan<br/>
 
 ## Usage
 1. Run the jupyter notebooks in `tdqn` to construct the tdqn model
@@ -19,11 +20,7 @@ torch<br/>
 - [x] eda: plotTimeSeries, daily_returns, adf test, 2 versions for bollingerBand, market value against Scarcity plot
 
 ## problems
-* glassnode does not provide stock to flow of eth
-* is daysTillHalving necessary for stock to flow?
 * is this split appropriate: training: 2014-2016, validation: 2017-2018, testing: 2019-2020
-* which bollingerband graph is better?
-* The graph looks ok without taking log for the axis, is it ok?
 
 
 ## Authors
