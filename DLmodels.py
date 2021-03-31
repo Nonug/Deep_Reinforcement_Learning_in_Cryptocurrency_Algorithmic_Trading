@@ -142,11 +142,11 @@ class LSTM(nn.Module):
 """Bidirectional version of the above LSTM model"""
 """will argue in report that bidirectional may not be realistic in stock trading context"""
 
-class LSTM(nn.Module):
+class BiLSTM(nn.Module):
 
     def __init__(self, input_size, hidden_size, num_layers, output_size):
 
-        super(LSTM, self).__init__()
+        super(BiLSTM, self).__init__()
 
         self.num_layers = num_layers
         self.hidden_size = hidden_size
