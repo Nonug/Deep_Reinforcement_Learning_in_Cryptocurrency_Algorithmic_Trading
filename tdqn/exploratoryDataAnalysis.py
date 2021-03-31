@@ -126,4 +126,7 @@ class ExploratoryDataAnalysis:
 
 
 	def plot_scarcity(self):
-		
+		plt.figure(figsize=(10, 4))
+		plt.plot(self.stock_to_flow.values, self.timeSeries.values, color='blue')
+		plt.xlabel("stock-to-flow (scarcity)")
+		plt.ylabel("market value")
