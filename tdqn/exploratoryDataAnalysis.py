@@ -47,7 +47,6 @@ class ExploratoryDataAnalysis:
 				buy_signal.append(np.nan)
 				sell_signal.append(np.nan)
 		return (buy_signal, sell_signal)
-	# https://randerson112358.medium.com/algorithmic-trading-using-bollinger-bands-python-e5081cbd7b4a
 	def bollingerBandStrategy1(self):
 		plt.style.use('fivethirtyeight')
 		df = self.timeSeries.to_frame()
@@ -127,7 +126,16 @@ class ExploratoryDataAnalysis:
 
 	def plot_scarcity(self):
 		plt.figure(figsize=(10, 4))
+		# # line plot
 		# plt.plot(self.stock_to_flow.values, self.timeSeries.values, color='blue')
-		plt.loglog(self.stock_to_flow.values, self.timeSeries.values)
+		# plt.loglog(self.stock_to_flow.values, self.timeSeries.values)
+		# plt.xlabel("stock-to-flow (scarcity)")
+		# plt.ylabel("market value")
+
+		# scatter plot
+		ax = plt.gca()
+		ax.scatter(self.stock_to_flow.values ,self.timeSeries.values, s=1)
+		ax.set_yscale('log')
+		ax.set_xscale('log')
 		plt.xlabel("stock-to-flow (scarcity)")
 		plt.ylabel("market value")

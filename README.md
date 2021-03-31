@@ -17,7 +17,7 @@ etherscan<br/>
 
 ## things I have/haven't done
 - [x] add stock to flow ratio to data
-- [x] eda: plotTimeSeries, daily_returns, adf test, 2 versions for bollingerBand, market value against Scarcity plot
+- [x] eda: plotTimeSeries, daily_returns, adf test, bollingerBand, market value against Scarcity plot
 
 ## problems
 * is this split appropriate: training: 2014-2016, validation: 2017-2018, testing: 2019-2020
@@ -31,3 +31,4 @@ etherscan<br/>
 ## Acknowledgements
 * [glassnode](https://glassnode.com/)
 * [tdqn](https://github.com/ThibautTheate/An-Application-of-Deep-Reinforcement-Learning-to-Algorithmic-Trading)
+* [Cryptocurrency Time Series by GuangZhiXie](https://github.com/guangzhixie/cryptocurrency-time-series)

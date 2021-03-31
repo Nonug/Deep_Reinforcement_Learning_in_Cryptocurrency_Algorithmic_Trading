@@ -88,11 +88,12 @@ class TradingSimulator:
         epsilonEnd = PARAM['epsilonEnd']
         epsilonDecay = PARAM['epsilonDecay']
         transactionCosts=PARAM['transactionCosts']
+        name = PARAM['name']
 
 
         # 2. TRAINING PHASE
         # Initialize the trading environment associated with the training phase
-        trainingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, money, 'training', stateLength, transactionCosts)
+        trainingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, money, name, stateLength, transactionCosts)
         # Instanciate the strategy classes
         strategyModule = importlib.import_module(str(strategy))
         className = getattr(strategyModule, strategy)
@@ -106,8 +107,8 @@ class TradingSimulator:
                                                plotTraining=plotTraining, showPerformance=showPerformance)
 
         # 3. TERMINATION PHASE
-        if rendering:
-            trainingEnv.render()
+        # if rendering:
+        #     trainingEnv.render()
         if(saveStrategy):
             fileName = os.path.join("Strategies", strategy+'_'+cryptocurrency)
             tradingStrategy.saveModel(fileName)
@@ -135,10 +136,11 @@ class TradingSimulator:
         stateLength = PARAM['stateLength']
         observationSpace = 1 + (stateLength-1)*numOfFeatures
         transactionCosts=PARAM['transactionCosts']
+        name = PARAM['name']
 
         # 2. TRAINING PHASE
         # Initialize the trading environment associated with the training phase
-        trainingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, money, 'training', stateLength, transactionCosts)
+        trainingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, money, name, stateLength, transactionCosts)
         # Instanciate the strategy classes
         strategyModule = importlib.import_module('classicalStrategy')
         className = getattr(strategyModule, strategy)
