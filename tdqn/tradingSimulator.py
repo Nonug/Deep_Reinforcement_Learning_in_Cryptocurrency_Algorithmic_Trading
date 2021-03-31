@@ -46,10 +46,12 @@ class TradingSimulator:
         
         tradingEnv = TradingEnv(cryptocurrency, startingDate, endingDate)
         timeSeries = tradingEnv.data['Close']
-        analyser = ExploratoryDataAnalysis(timeSeries)
+        analyser = ExploratoryDataAnalysis(timeSeries, cryptocurrency)
         analyser.plotTimeSeries()
+        analyser.plot_daily_returns()
         analyser.augmentedDickeyFullerTest()
-        analyser.bollingerBandStrategy()
+        analyser.bollingerBandStrategy1()
+        analyser.bollingerBandStrategy2()
 
 
     def aiTrain(self, strategyName, cryptocurrencyName, PARAM, 

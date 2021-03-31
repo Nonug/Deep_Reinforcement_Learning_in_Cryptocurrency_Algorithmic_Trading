@@ -4,11 +4,12 @@ from matplotlib import pyplot as plt
 from statsmodels.tsa.stattools import adfuller
 
 class ExploratoryDataAnalysis:
-	def __init__(self, timeSeries):
+	def __init__(self, timeSeries, symbol='btc'):
 		self.timeSeries = timeSeries
+		self.symbol = symbol
 
 
-	#tdqn
+	# tdqn
 	def plotTimeSeries(self):
 		# Generation of the plot
 		pd.plotting.register_matplotlib_converters()
@@ -19,24 +20,33 @@ class ExploratoryDataAnalysis:
 		plt.show()
 
 
-	# tdqn
+	# https://github.com/guangzhixie/cryptocurrency-time-series/blob/master/one-step-prediction.ipynb
 	def augmentedDickeyFullerTest(self):
 		# Augmented Dickey-Fuller test
-		print("Stationarity analysis: Augmented Dickey-Fuller test (ADF):")
-		results = adfuller(self.timeSeries, autolag='AIC')
-		print("ADF statistic: " + str(results[0]))
-		print("p-value: " + str(results[1]))
-		print('Critial values (the time series is not stationary with X% condifidence):')
-		for key, value in results[4].items():
-			print(str(key) + ': ' + str(value))
-		if results[1] < 0.05:
-			print("The ADF test affirms that the time series is stationary.")
-		else:
-			print("The ADF test could not affirm whether or not the time series is stationary...")
+		print("Augmented Dickey-Fuller test (ADF):")
+		results = adfuller(self.timeSeries)
+		print('ADF Statistic: %f' % results[0])
+		print('p-value: %f' % results[1])
 
 
 	# https://randerson112358.medium.com/algorithmic-trading-using-bollinger-bands-python-e5081cbd7b4a
-	def bollingerBandStrategy(self):
+	# Create a function to get the buy and sell signals
+	def get_signal(self, data):
+		buy_signal = [] #buy list
+		sell_signal = [] #sell list
+		for i in range(len(data['Close'])):
+			if data['Close'][i] > data['Upper'][i]: #Then you should sell 
+				buy_signal.append(np.nan)
+				sell_signal.append(data['Close'][i])
+			elif data['Close'][i] < data['Lower'][i]: #Then you should buy
+				sell_signal.append(np.nan)
+				buy_signal.append(data['Close'][i])
+			else:
+				buy_signal.append(np.nan)
+				sell_signal.append(np.nan)
+		return (buy_signal, sell_signal)
+	# https://randerson112358.medium.com/algorithmic-trading-using-bollinger-bands-python-e5081cbd7b4a
+	def bollingerBandStrategy1(self):
 		plt.style.use('fivethirtyeight')
 		df = self.timeSeries.to_frame()
 		df.columns = ['Close']
@@ -82,18 +92,31 @@ class ExploratoryDataAnalysis:
 		ax.legend()
 		plt.show();
 
-	# Create a function to get the buy and sell signals
-	def get_signal(self, data):
-		buy_signal = [] #buy list
-		sell_signal = [] #sell list
-		for i in range(len(data['Close'])):
-			if data['Close'][i] > data['Upper'][i]: #Then you should sell 
-				buy_signal.append(np.nan)
-				sell_signal.append(data['Close'][i])
-			elif data['Close'][i] < data['Lower'][i]: #Then you should buy
-				sell_signal.append(np.nan)
-				buy_signal.append(data['Close'][i])
-			else:
-				buy_signal.append(np.nan)
-				sell_signal.append(np.nan)
-		return (buy_signal, sell_signal)
+
+	# https://github.com/guangzhixie/cryptocurrency-time-series/blob/master/Cryptocurrencies_EDA.ipynb
+	def get_bollinger_bands(self, rm, rstd):
+		"""Return upper and lower Bollinger Bands."""
+		upper_band = rm + 2*rstd
+		lower_band = rm - 2*rstd
+		return upper_band, lower_band
+	# https://github.com/guangzhixie/cryptocurrency-time-series/blob/master/Cryptocurrencies_EDA.ipynb
+	def bollingerBandStrategy2(self):
+		rm = self.timeSeries.rolling(window=20).mean()
+		rstd = self.timeSeries.rolling(window=20).std()
+		upper_band, lower_band = self.get_bollinger_bands(rm, rstd)
+
+		plt.figure(figsize=(10,6))
+		ax = self.timeSeries.plot(title = self.symbol+" Bollinger Band")
+		rm.plot(label='Rolling Mean', ax=ax)
+		upper_band.plot(label='Upper Band', ax=ax)
+		lower_band.plot(label='Lower Band', ax=ax)
+		plt.legend(loc='upper left')
+
+
+	# https://github.com/guangzhixie/cryptocurrency-time-series/blob/master/Cryptocurrencies_EDA.ipynb
+	def plot_daily_returns(self):
+		daily_returns = (self.timeSeries / self.timeSeries.shift(1)) - 1
+		daily_returns.iloc[0,:] = 0
+		ax = daily_returns.plot(title="Daily returns", fontsize=12)
+		ax.set_xlabel("Date")
+		ax.set_ylabel("Price")
