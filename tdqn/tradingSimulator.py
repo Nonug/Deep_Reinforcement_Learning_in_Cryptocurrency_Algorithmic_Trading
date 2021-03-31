@@ -46,12 +46,14 @@ class TradingSimulator:
         
         tradingEnv = TradingEnv(cryptocurrency, startingDate, endingDate)
         timeSeries = tradingEnv.data['Close']
-        analyser = ExploratoryDataAnalysis(timeSeries, cryptocurrency)
+        stock_to_flow = tradingEnv.data['ratio']
+        analyser = ExploratoryDataAnalysis(timeSeries, stock_to_flow, cryptocurrency)
         analyser.plotTimeSeries()
         analyser.plot_daily_returns()
         analyser.augmentedDickeyFullerTest()
         analyser.bollingerBandStrategy1()
         analyser.bollingerBandStrategy2()
+        analyser.plot_scarcity()
 
 
     def aiTrain(self, strategyName, cryptocurrencyName, PARAM, 
@@ -152,6 +154,7 @@ class TradingSimulator:
             fileHandler = open(fileName, 'wb') 
             pickle.dump(tradingStrategy, fileHandler)
         return tradingStrategy, trainingEnv
+
 
     def test(self, strategyName, trainCryptocurrencyName, testCryptocurrencyName, PARAM, 
             rendering=True, showPerformance=True):

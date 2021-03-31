@@ -4,9 +4,10 @@ from matplotlib import pyplot as plt
 from statsmodels.tsa.stattools import adfuller
 
 class ExploratoryDataAnalysis:
-	def __init__(self, timeSeries, symbol='btc'):
+	def __init__(self, timeSeries, stock_to_flow, symbol='btc'):
 		self.timeSeries = timeSeries
 		self.symbol = symbol
+		self.stock_to_flow = stock_to_flow
 
 
 	# tdqn
@@ -29,6 +30,7 @@ class ExploratoryDataAnalysis:
 		print('p-value: %f' % results[1])
 
 
+	# bollingerBandStrategy1
 	# https://randerson112358.medium.com/algorithmic-trading-using-bollinger-bands-python-e5081cbd7b4a
 	# Create a function to get the buy and sell signals
 	def get_signal(self, data):
@@ -93,6 +95,7 @@ class ExploratoryDataAnalysis:
 		plt.show();
 
 
+	# bollingerBandStrategy2
 	# https://github.com/guangzhixie/cryptocurrency-time-series/blob/master/Cryptocurrencies_EDA.ipynb
 	def get_bollinger_bands(self, rm, rstd):
 		"""Return upper and lower Bollinger Bands."""
@@ -120,3 +123,7 @@ class ExploratoryDataAnalysis:
 		ax = daily_returns.plot(title="Daily returns", fontsize=12)
 		ax.set_xlabel("Date")
 		ax.set_ylabel("Price")
+
+
+	def plot_scarcity(self):
+		
