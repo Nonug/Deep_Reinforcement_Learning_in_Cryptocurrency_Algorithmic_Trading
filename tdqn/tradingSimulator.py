@@ -128,6 +128,9 @@ class TradingSimulator:
         money = PARAM['money']
         strategy = strategies[strategyName]
         trainingParameters = [bounds, step]
+        stateLength = PARAM['stateLength']
+        observationSpace = 1 + (stateLength-1)*numOfFeatures
+        transactionCosts=PARAM['transactionCosts']
 
         # 2. TRAINING PHASE
         # Initialize the trading environment associated with the training phase
@@ -142,8 +145,6 @@ class TradingSimulator:
                                                plotTraining=plotTraining, showPerformance=showPerformance)
         
         # 3. TERMINATION PHASE
-        if rendering:
-            trainingEnv.render()
         if(saveStrategy):
             fileName = os.path.join("Strategies", strategy+'_'+cryptocurrency)
             fileHandler = open(fileName, 'wb') 
@@ -173,9 +174,8 @@ class TradingSimulator:
         money = PARAM['money']
         transactionCosts = PARAM['transactionCosts']
         name = PARAM['name']
-        if ai:
-            stateLength = PARAM['stateLength']
-            observationSpace = 1 + (stateLength-1)*numOfFeatures
+        stateLength = PARAM['stateLength']
+        observationSpace = 1 + (stateLength-1)*numOfFeatures
 
 
         # 2. LOADING PHASE    
@@ -199,8 +199,6 @@ class TradingSimulator:
         # Initialize the trading environments associated with the testing phase
         testingEnv = TradingEnv(testCryptocurrency, startingDate, endingDate, money, name, stateLength, transactionCosts)
         testingEnv = tradingStrategy.testing(testingEnv, testingEnv, rendering=rendering, showPerformance=showPerformance)
-        if rendering:
-            testingEnv.render()
         # log training result
         path = os.path.join('log', testCryptocurrency+'_'+startingDate+'_'+endingDate+'_'+name+'_result.csv')
         logDF = testingEnv.data

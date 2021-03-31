@@ -101,35 +101,46 @@ class TradingEnv(gym.Env):
     
 
     def step(self, action):
-        # GOAL: Transition to the next trading time step based on the trading position decision made.
+        """
+        GOAL: Transition to the next trading time step based on the
+              trading position decision made (either long or short).
+        
+        INPUTS: - action: Trading decision (1 = long, 0 = short).    
+        
+        OUTPUTS: - state: RL state to be returned to the RL agent.
+                 - reward: RL reward to be returned to the RL agent.
+                 - done: RL episode termination signal (boolean).
+                 - info: Additional information returned to the RL agent.
+        """
 
         # Stting of some local variables
         t = self.t
         numberOfShares = self.numberOfShares
         customReward = False
-        if action<-1 or action>1:
-            print(action)
-            raise SystemExit("Prohibited action! -1<=Action<=1")
 
         # CASE 1: LONG POSITION
-        if(action>0):
+        if(action == 1):
             self.data['Position'][t] = 1
-
-            # Case a: No position/Long -> Long
-            if(self.data['Position'][t - 1] >= 0):
-                numberOfSharesToBuy = math.floor(self.data['Cash'][t - 1]*action/(self.data['Close'][t] * (1 + self.transactionCosts)))
-                self.numberOfShares += numberOfSharesToBuy
-                self.data['Cash'][t] = self.data['Cash'][t - 1] - numberOfSharesToBuy * self.data['Close'][t] * (1 + self.transactionCosts)
+            # Case a: Long -> Long
+            if(self.data['Position'][t - 1] == 1):
+                self.data['Cash'][t] = self.data['Cash'][t - 1]
                 self.data['Holdings'][t] = self.numberOfShares * self.data['Close'][t]
-            # Case b: Short -> Long
+            # Case b: No position -> Long
+            elif(self.data['Position'][t - 1] == 0):
+                self.numberOfShares = math.floor(self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts)))
+                self.data['Cash'][t] = self.data['Cash'][t - 1] - self.numberOfShares * self.data['Close'][t] * (1 + self.transactionCosts)
+                self.data['Holdings'][t] = self.numberOfShares * self.data['Close'][t]
+                self.data['Action'][t] = 1
+            # Case c: Short -> Long
             else:
                 self.data['Cash'][t] = self.data['Cash'][t - 1] - self.numberOfShares * self.data['Close'][t] * (1 + self.transactionCosts)
                 self.numberOfShares = math.floor(self.data['Cash'][t]/(self.data['Close'][t] * (1 + self.transactionCosts)))
                 self.data['Cash'][t] = self.data['Cash'][t] - self.numberOfShares * self.data['Close'][t] * (1 + self.transactionCosts)
                 self.data['Holdings'][t] = self.numberOfShares * self.data['Close'][t]
+                self.data['Action'][t] = 1
 
         # CASE 2: SHORT POSITION
-        elif(action < 0):
+        elif(action == 0):
             self.data['Position'][t] = -1
             # Case a: Short -> Short
             if(self.data['Position'][t - 1] == -1):
@@ -148,12 +159,18 @@ class TradingEnv(gym.Env):
                 self.numberOfShares = math.floor(self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts)))
                 self.data['Cash'][t] = self.data['Cash'][t - 1] + self.numberOfShares * self.data['Close'][t] * (1 - self.transactionCosts)
                 self.data['Holdings'][t] = - self.numberOfShares * self.data['Close'][t]
+                self.data['Action'][t] = -1
             # Case c: Long -> Short
             else:
                 self.data['Cash'][t] = self.data['Cash'][t - 1] + self.numberOfShares * self.data['Close'][t] * (1 - self.transactionCosts)
                 self.numberOfShares = math.floor(self.data['Cash'][t]/(self.data['Close'][t] * (1 + self.transactionCosts)))
                 self.data['Cash'][t] = self.data['Cash'][t] + self.numberOfShares * self.data['Close'][t] * (1 - self.transactionCosts)
                 self.data['Holdings'][t] = - self.numberOfShares * self.data['Close'][t]
+                self.data['Action'][t] = -1
+
+        # CASE 3: PROHIBITED ACTION
+        else:
+            raise SystemExit("Prohibited action! Action should be either 1 (long) or 0 (short).")
 
         # Update the total amount of money owned by the agent, as well as the return generated
         self.data['Money'][t] = self.data['Holdings'][t] + self.data['Cash'][t]
@@ -172,7 +189,6 @@ class TradingEnv(gym.Env):
                       self.data['High'][self.t - self.stateLength : self.t].tolist(),
                       self.data['Volume'][self.t - self.stateLength : self.t].tolist(),
                       [self.data['Position'][self.t - 1]]]
-                      # new features
         if(self.t == self.data.shape[0]):
             self.done = 1  
 
@@ -224,7 +240,6 @@ class TradingEnv(gym.Env):
                       self.data['Low'][self.t - self.stateLength : self.t].tolist(),
                       self.data['High'][self.t - self.stateLength : self.t].tolist(),
                       self.data['Volume'][self.t - self.stateLength : self.t].tolist(),
-                      # new features
                       [otherPosition]]
         self.info = {'State' : otherState, 'Reward' : otherReward, 'Done' : self.done}
 
