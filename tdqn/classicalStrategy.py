@@ -56,7 +56,7 @@ class tradingStrategy(ABC):
     
 
     @abstractmethod
-    def training(self, trainingEnv, trainingParameters=[], endingDate='2020-01-01',
+    def training(self, trainingEnv, name="", trainingParameters=[], endingDate='2020-01-01',
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -80,7 +80,7 @@ class tradingStrategy(ABC):
 
 
     @abstractmethod
-    def testing(self, testingEnv, trainingEnv, rendering=False, showPerformance=False):
+    def testing(self, testingEnv, trainingEnv, name="", rendering=False, showPerformance=False):
         """
         GOAL: Test the trading strategy on another unknown trading
               environment (called testing set) in order to evaluate
@@ -135,7 +135,7 @@ class BuyAndHold(tradingStrategy):
         return 1
     
 
-    def training(self, trainingEnv, trainingParameters=[], endingDate='2020-01-01',
+    def training(self, trainingEnv, name="", trainingParameters=[], endingDate='2020-01-01',
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -186,7 +186,7 @@ class BuyAndHold(tradingStrategy):
         return trainingEnv
 
 
-    def testing(self, trainingEnv, testingEnv, rendering=False, showPerformance=False):
+    def testing(self, trainingEnv, testingEnv, name="", rendering=False, showPerformance=False):
         """
         GOAL: Test the trading strategy on another unknown trading
               environment (called testing set) in order to evaluate
@@ -257,7 +257,7 @@ class SellAndHold(tradingStrategy):
         return 0
     
 
-    def training(self, trainingEnv, trainingParameters=[], endingDate='2020-01-01',
+    def training(self, trainingEnv, name="", trainingParameters=[], endingDate='2020-01-01',
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -308,7 +308,7 @@ class SellAndHold(tradingStrategy):
         return trainingEnv
 
 
-    def testing(self, trainingEnv, testingEnv, rendering=False, showPerformance=False):
+    def testing(self, trainingEnv, testingEnv, name="", rendering=False, showPerformance=False):
         """
         GOAL: Test the trading strategy on another unknown trading
               environment (called testing set) in order to evaluate
@@ -433,7 +433,7 @@ class MovingAveragesTF(tradingStrategy):
             return 0
     
 
-    def training(self, trainingEnv, trainingParameters=[], endingDate='2020-01-01',
+    def training(self, trainingEnv, name="", trainingParameters=[], endingDate='2020-01-01',
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -536,7 +536,7 @@ class MovingAveragesTF(tradingStrategy):
         return trainingEnv
 
 
-    def testing(self, trainingEnv, testingEnv, rendering=False, showPerformance=False):
+    def testing(self, trainingEnv, testingEnv, name="", rendering=False, showPerformance=False):
         """
         GOAL: Test the trading strategy on another unknown trading
               environment (called testing set) in order to evaluate
@@ -707,7 +707,7 @@ class MovingAveragesMR(tradingStrategy):
             return 0
     
 
-    def training(self, trainingEnv, trainingParameters=[], endingDate='2020-01-01',
+    def training(self, trainingEnv, name="", trainingParameters=[], endingDate='2020-01-01',
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -810,7 +810,7 @@ class MovingAveragesMR(tradingStrategy):
         return trainingEnv
 
 
-    def testing(self, trainingEnv, testingEnv, rendering=False, showPerformance=False):
+    def testing(self, trainingEnv, testingEnv, name="", rendering=False, showPerformance=False):
         """
         GOAL: Test the trading strategy on another unknown trading
               environment (called testing set) in order to evaluate

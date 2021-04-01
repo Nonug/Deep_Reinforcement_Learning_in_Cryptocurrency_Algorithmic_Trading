@@ -15,12 +15,16 @@ etherscan<br/>
 ## Usage
 1. Run the jupyter notebooks in `tdqn` to construct the tdqn model
 
-## things I have/haven't done
-- [x] add stock to flow ratio to data
-- [x] eda: plotTimeSeries, daily_returns, adf test, bollingerBand, market value against Scarcity plot
+## version
+basic version for interim prototype, should be able to run without error
+* action space = 2
+* state = ['Close',"Low","High","Volume","s2f"]
+* basic TDQN 
+* no eth test because haven't scraped eth s2f
+
 
 ## problems
-* is this split appropriate: training: 2014-2016, validation: 2017-2018, testing: 2019-2020
+* 
 
 
 ## Authors

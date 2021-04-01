@@ -388,6 +388,9 @@ class TDQN:
         # 4. Volumes => minimum and maximum values
         coeffs = (np.min(volumes)/margin, np.max(volumes)*margin)
         coefficients.append(coeffs)
+        # 5. s2f 
+        coeffs = (np.min(s2f)/margin, np.max(s2f)*margin)
+        coefficients.append(coeffs)
         
         return coefficients
 
@@ -440,6 +443,12 @@ class TDQN:
             state[3] = [((x - coefficients[3][0])/(coefficients[3][1] - coefficients[3][0])) for x in volumes]
         else:
             state[3] = [0 for x in volumes]
+        # 5. s2f
+        s2f = [s2f[i] for i in range(1, len(s2f))]
+        if coefficients[4][0] != coefficients[3][1]:
+            state[4] = [((x - coefficients[4][0])/(coefficients[4][1] - coefficients[4][0])) for x in s2f]
+        else:
+            state[4] = [0 for x in s2f]
         
         # Process the state structure to obtain the appropriate format
         state = [item for sublist in state for item in sublist]
@@ -594,7 +603,7 @@ class TDQN:
             self.policyNetwork.eval()
 
 
-    def training(self, trainingEnv, trainingParameters=[], endingDate='2019-01-01',
+    def training(self, trainingEnv, name="", trainingParameters=[], endingDate='2019-01-01',
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the RL trading agent by interacting with its trading environment.
@@ -736,10 +745,9 @@ class TDQN:
             ax.plot(performanceTrain)
             ax.plot(performanceTest)
             ax.legend(["Training", "Validation"])
-            plt.savefig(''.join(['Figures/', str(marketSymbol), '_TrainingValidationPerformance', '.png']))
-            #plt.show()
+            plt.savefig(os.path.join("Figures", name+"_performance.png"))
             for i in range(len(trainingEnvList)):
-                self.plotTraining(score[i][:episode], marketSymbol)
+                self.plotTraining(score[i][:episode], name)
 
         # If required, print the strategy performance in a table
         if showPerformance:
@@ -752,7 +760,7 @@ class TDQN:
         return trainingEnv
 
 
-    def testing(self, trainingEnv, testingEnv, rendering=False, showPerformance=False):
+    def testing(self, trainingEnv, testingEnv, name="", rendering=False, showPerformance=False):
         """
         GOAL: Test the RL agent trading policy on a new trading environment
               in order to assess the trading strategy performance.
@@ -799,7 +807,7 @@ class TDQN:
         # If required, show the rendering of the trading environment
         if rendering:
             testingEnv.render()
-            self.plotQValues(QValues0, QValues1, testingEnv.marketSymbol)
+            self.plotQValues(QValues0, QValues1, name)
 
         # If required, print the strategy performance in a table
         if showPerformance:
@@ -809,7 +817,7 @@ class TDQN:
         return testingEnv
 
 
-    def plotTraining(self, score, marketSymbol):
+    def plotTraining(self, score, name=""):
         """
         GOAL: Plot the training phase results
               (score, sum of rewards).
@@ -823,11 +831,10 @@ class TDQN:
         fig = plt.figure()
         ax1 = fig.add_subplot(111, ylabel='Total reward collected', xlabel='Episode')
         ax1.plot(score)
-        plt.savefig(''.join(['Figures/', str(marketSymbol), 'TrainingResults', '.png']))
-        #plt.show()
+        plt.savefig(os.path.join('Figures', name+"_Results.png"))
 
     
-    def plotQValues(self, QValues0, QValues1, marketSymbol):
+    def plotQValues(self, QValues0, QValues1, name=""):
         """
         Plot sequentially the Q values related to both actions.
         
@@ -843,11 +850,10 @@ class TDQN:
         ax1.plot(QValues0)
         ax1.plot(QValues1)
         ax1.legend(['Short', 'Long'])
-        plt.savefig(''.join(['Figures/', str(marketSymbol), '_QValues', '.png']))
-        #plt.show()
+        plt.savefig(os.path.join('Figures', name+"_Qvalues.png"))
 
 
-    def plotExpectedPerformance(self, trainingEnv, trainingParameters=[], iterations=10):
+    def plotExpectedPerformance(self, trainingEnv, name="", trainingParameters=[], iterations=10):
         """
         GOAL: Plot the expected performance of the intelligent DRL trading agent.
         
@@ -989,8 +995,7 @@ class TDQN:
             ax.plot([performanceTrain[e][i] for e in range(trainingParameters[0])])
             ax.plot([performanceTest[e][i] for e in range(trainingParameters[0])])
             ax.legend(["Training", "Testing"])
-            plt.savefig(''.join(['Figures/', str(marketSymbol), '_TrainingTestingPerformance', str(i+1), '.png']))
-            #plt.show()
+            plt.savefig(os.path.join("Figures", name+"_TrainingTestingPerformance"+str(i+1)+".png"))
 
         # Plot the expected performance of the intelligent DRL trading agent
         fig = plt.figure()
@@ -1000,8 +1005,7 @@ class TDQN:
         ax.fill_between(range(len(expectedPerformanceTrain)), expectedPerformanceTrain-stdPerformanceTrain, expectedPerformanceTrain+stdPerformanceTrain, alpha=0.25)
         ax.fill_between(range(len(expectedPerformanceTest)), expectedPerformanceTest-stdPerformanceTest, expectedPerformanceTest+stdPerformanceTest, alpha=0.25)
         ax.legend(["Training", "Testing"])
-        plt.savefig(''.join(['Figures/', str(marketSymbol), '_TrainingTestingExpectedPerformance', '.png']))
-        #plt.show()
+        plt.savefig(os.path.join('Figures', name+"_TrainingTestingExpectedPerformance.png"))
 
         # Closing of the tensorboard writer
         self.writer.close()

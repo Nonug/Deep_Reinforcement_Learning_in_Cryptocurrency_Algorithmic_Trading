@@ -9,7 +9,7 @@ from exploratoryDataAnalysis import ExploratoryDataAnalysis
 
 
 # define default variables
-numOfFeatures = 4
+numOfFeatures = 5
 actionSpace = 2
 bounds = [1, 30]
 step = 1
@@ -48,11 +48,9 @@ class TradingSimulator:
         analyser = ExploratoryDataAnalysis(tradingEnv.data, cryptocurrency)
         analyser.plotTimeSeries()
         analyser.plot_daily_returns()
-        # analyser.augmentedDickeyFullerTest()
-        # analyser.bollingerBandStrategy1()
-        analyser.bollingerBandStrategy2()
+        analyser.bollingerBandStrategy()
         analyser.plot_scarcity()
-        analyser.check_empty_dup()
+        analyser.check_empty_duplicate()
 
 
     def aiTrain(self, strategyName, cryptocurrencyName, PARAM, 
@@ -101,13 +99,11 @@ class TradingSimulator:
                                     epsilonEnd=epsilonEnd, epsilonDecay=epsilonDecay, capacity=capacity, 
                                     batchSize=batchSize)
         # Training of the trading strategy
-        trainingEnv = tradingStrategy.training(trainingEnv, trainingParameters=trainingParameters,
+        trainingEnv = tradingStrategy.training(trainingEnv, name, trainingParameters=trainingParameters,
                                                verbose=verbose, rendering=rendering,
                                                plotTraining=plotTraining, showPerformance=showPerformance)
 
         # 3. TERMINATION PHASE
-        # if rendering:
-        #     trainingEnv.render()
         if(saveStrategy):
             fileName = os.path.join("Strategies", strategy+'_'+cryptocurrency)
             tradingStrategy.saveModel(fileName)
@@ -145,7 +141,7 @@ class TradingSimulator:
         className = getattr(strategyModule, strategy)
         tradingStrategy = className()
         # Training of the trading strategy
-        trainingEnv = tradingStrategy.training(trainingEnv, trainingParameters=trainingParameters,
+        trainingEnv = tradingStrategy.training(trainingEnv, name, trainingParameters=trainingParameters,
                                                endingDate=endingDate, verbose=verbose, rendering=rendering,
                                                plotTraining=plotTraining, showPerformance=showPerformance)
         
@@ -204,7 +200,7 @@ class TradingSimulator:
         # 3. TESTING PHASE
         # Initialize the trading environments associated with the testing phase
         testingEnv = TradingEnv(testCryptocurrency, startingDate, endingDate, money, name, stateLength, transactionCosts)
-        testingEnv = tradingStrategy.testing(testingEnv, testingEnv, rendering=rendering, showPerformance=showPerformance)
+        testingEnv = tradingStrategy.testing(testingEnv, testingEnv, name, rendering=rendering, showPerformance=showPerformance)
         # log training result
         path = os.path.join('log', testCryptocurrency+'_'+startingDate+'_'+endingDate+'_'+name+'_result.csv')
         logDF = testingEnv.data

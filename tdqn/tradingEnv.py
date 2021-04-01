@@ -11,7 +11,7 @@ pd.options.mode.chained_assignment = None
 class TradingEnv(gym.Env):
     # GOAL: Implement a custom trading environment compatible with OpenAI Gym.
 
-    def __init__(self, marketSymbol, startingDate, endingDate, money=0, name='na', stateLength=30, transactionCosts=0):
+    def __init__(self, marketSymbol, startingDate, endingDate, money=0, name="", stateLength=30, transactionCosts=0):
         # GOAL: Object constructor initializing the trading environment by setting up
         #       the trading activity dataframe as well as other important variables.
 
@@ -189,6 +189,7 @@ class TradingEnv(gym.Env):
                       self.data['Low'][self.t - self.stateLength : self.t].tolist(),
                       self.data['High'][self.t - self.stateLength : self.t].tolist(),
                       self.data['Volume'][self.t - self.stateLength : self.t].tolist(),
+                      self.data['s2f'][self.t - self.stateLength : self.t].tolist(),
                       [self.data['Position'][self.t - 1]]]
         if(self.t == self.data.shape[0]):
             self.done = 1
@@ -241,6 +242,7 @@ class TradingEnv(gym.Env):
                       self.data['Low'][self.t - self.stateLength : self.t].tolist(),
                       self.data['High'][self.t - self.stateLength : self.t].tolist(),
                       self.data['Volume'][self.t - self.stateLength : self.t].tolist(),
+                      self.data['s2f'][self.t - self.stateLength : self.t].tolist(),
                       [otherPosition]]
         self.info = {'State' : otherState, 'Reward' : otherReward, 'Done' : self.done}
 
@@ -251,8 +253,13 @@ class TradingEnv(gym.Env):
     def render(self):
         """
         GOAL: Illustrate graphically the trading activity, by plotting
-              both the evolution of the stock market price and the
-              evolution of the trading capital.
+              both the evolution of the stock market price and the 
+              evolution of the trading capital. All the trading decisions
+              (long and short positions) are displayed as well.
+        
+        INPUTS: /   
+        
+        OUTPUTS: /
         """
 
         # Set the Matplotlib figure and subplots
@@ -262,11 +269,23 @@ class TradingEnv(gym.Env):
 
         # Plot the first graph -> Evolution of the stock market price
         self.data['Close'].plot(ax=ax1, color='blue', lw=2)
-
+        ax1.plot(self.data.loc[self.data['Action'] == 1.0].index, 
+                 self.data['Close'][self.data['Action'] == 1.0],
+                 '^', markersize=5, color='green')   
+        ax1.plot(self.data.loc[self.data['Action'] == -1.0].index, 
+                 self.data['Close'][self.data['Action'] == -1.0],
+                 'v', markersize=5, color='red')
+        
         # Plot the second graph -> Evolution of the trading capital
         self.data['Money'].plot(ax=ax2, color='blue', lw=2)
-
+        ax2.plot(self.data.loc[self.data['Action'] == 1.0].index, 
+                 self.data['Money'][self.data['Action'] == 1.0],
+                 '^', markersize=5, color='green')   
+        ax2.plot(self.data.loc[self.data['Action'] == -1.0].index, 
+                 self.data['Money'][self.data['Action'] == -1.0],
+                 'v', markersize=5, color='red')
+        
         # Generation of the two legends and plotting
-        ax1.legend(["Price"])
-        ax2.legend(["Capital"])
-        plt.savefig(os.path.join('Figures', str(self.marketSymbol)+'_'+str(self.name)+'_Rendering.png'))
+        ax1.legend(["Price", "Long",  "Short"])
+        ax2.legend(["Capital", "Long", "Short"])
+        plt.savefig(os.path.join('Figures', self.name+'_Rendering.png'))
