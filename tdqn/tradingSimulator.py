@@ -86,6 +86,7 @@ class TradingSimulator:
         epsilonDecay = PARAM['epsilonDecay']
         transactionCosts=PARAM['transactionCosts']
         name = PARAM['name']
+        network = PARAM['network']
 
 
         # 2. TRAINING PHASE
@@ -94,7 +95,7 @@ class TradingSimulator:
         # Instanciate the strategy classes
         strategyModule = importlib.import_module(str(strategy))
         className = getattr(strategyModule, strategy)
-        tradingStrategy = className(observationSpace, actionSpace, gamma=gamma, learningRate=learningRate,
+        tradingStrategy = className(observationSpace, actionSpace, network, gamma=gamma, learningRate=learningRate,
                                     targetNetworkUpdate=targetNetworkUpdate, epsilonStart=epsilonStart, 
                                     epsilonEnd=epsilonEnd, epsilonDecay=epsilonDecay, capacity=capacity, 
                                     batchSize=batchSize)

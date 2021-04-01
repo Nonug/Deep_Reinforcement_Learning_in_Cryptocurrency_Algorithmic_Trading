@@ -16,11 +16,12 @@ etherscan<br/>
 1. Run the jupyter notebooks in `tdqn` to construct the tdqn model
 
 ## version
-basic version for interim prototype, should be able to run without error
+version for interim prototype
 * action space = 2
 * state = ['Close',"Low","High","Volume","s2f"]
 * basic TDQN 
 * no eth test because haven't scraped eth s2f
+* experiments on different network can be carry out by including network in the training param
 
 
 ## problems
