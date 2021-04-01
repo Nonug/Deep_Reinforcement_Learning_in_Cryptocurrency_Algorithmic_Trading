@@ -2,7 +2,7 @@ import copy
 import numpy as np
 from tradingEnv import TradingEnv
 
-# Default ranges for the parameters of the data augmentation techniques 
+# Default ranges for the parameters of the data augmentation techniques
 shiftRange = [0]
 stretchRange = [1]
 filterRange = [5]
@@ -11,9 +11,9 @@ noiseRange = [0]
 class DataAugmentation:
     """
     GOAL: Implementing some data augmentation techniques for stock time series.
-    
+
     VARIABLES: /
-                                
+
     METHODS:    - __init__: Initialization of some class variables.
                 - shiftTimeSeries: Generate a new trading environment by simply
                                    shifting up or down the volume time series.
@@ -24,17 +24,17 @@ class DataAugmentation:
                 - lowPassFilter: Generate a new trading environment by filtering
                                  (low-pass) the original time series.
                 - generate: Generate a set of new trading environments based on the
-                            data augmentation techniques implemented.       
+                            data augmentation techniques implemented.
     """
-    
+
     def shiftTimeSeries(self, tradingEnv, shiftMagnitude=0):
         """
         GOAL: Generate a new trading environment by simply shifting up or down
               the volume time series.
-        
+
         INPUTS: - tradingEnv: Original trading environment to augment.
                 - shiftMagnitude: Magnitude of the shift.
-        
+
         OUTPUTS: - newTradingEnv: New trading environment generated.
         """
 
@@ -45,7 +45,7 @@ class DataAugmentation:
         if shiftMagnitude < 0:
             minValue = np.min(tradingEnv.data['Volume'])
             shiftMagnitude = max(-minValue, shiftMagnitude)
-        
+
         # Shifting of the volume time series
         newTradingEnv.data['Volume'] += shiftMagnitude
 
@@ -56,12 +56,12 @@ class DataAugmentation:
     def streching(self, tradingEnv, factor=1):
         """
         GOAL: Generate a new trading environment by stretching
-              or contracting the original price time series, by 
+              or contracting the original price time series, by
               multiplying the returns by a certain factor.
-        
+
         INPUTS: - tradingEnv: Original trading environment to augment.
                 - factor: Stretching/contraction factor.
-        
+
         OUTPUTS: - newTradingEnv: New trading environment generated.
         """
 
@@ -84,10 +84,10 @@ class DataAugmentation:
         """
         GOAL: Generate a new trading environment by adding some gaussian
               random noise to the original time series.
-        
+
         INPUTS: - tradingEnv: Original trading environment to augment.
                 - stdev: Standard deviation of the generated white noise.
-        
+
         OUTPUTS: - newTradingEnv: New trading environment generated.
         """
 
@@ -99,14 +99,17 @@ class DataAugmentation:
             # Generation of artificial gaussian random noises
             price = newTradingEnv.data['Close'][i]
             volume = newTradingEnv.data['Volume'][i]
+            s2f = newTradingEnv.data['s2f'][i]
             priceNoise = np.random.normal(0, stdev*(price/100))
             volumeNoise = np.random.normal(0, stdev*(volume/100))
+            s2fNoise = np.random.normal(0, stdev*(volume/100))
 
             # Addition of the artificial noise generated
             newTradingEnv.data['Close'][i] *= (1 + priceNoise/100)
             newTradingEnv.data['Low'][i] *= (1 + priceNoise/100)
             newTradingEnv.data['High'][i] *= (1 + priceNoise/100)
             newTradingEnv.data['Volume'][i] *= (1 + volumeNoise/100)
+            newTradingEnv.data['s2f'][i] *= (1 + s2fNoise/100)
             newTradingEnv.data['Open'][i] = newTradingEnv.data['Close'][i-1]
 
         # Return the new trading environment generated
@@ -117,10 +120,10 @@ class DataAugmentation:
         """
         GOAL: Generate a new trading environment by filtering
               (low-pass filter) the original time series.
-        
+
         INPUTS: - tradingEnv: Original trading environment to augment.
                 - order: Order of the filtering operation.
-        
+
         OUTPUTS: - newTradingEnv: New trading environment generated.
         """
 
@@ -132,11 +135,13 @@ class DataAugmentation:
         newTradingEnv.data['Low'] = newTradingEnv.data['Low'].rolling(window=order).mean()
         newTradingEnv.data['High'] = newTradingEnv.data['High'].rolling(window=order).mean()
         newTradingEnv.data['Volume'] = newTradingEnv.data['Volume'].rolling(window=order).mean()
+        newTradingEnv.data['s2f'] = newTradingEnv.data['s2f'].rolling(window=order).mean()
         for i in range(order):
             newTradingEnv.data['Close'][i] = tradingEnv.data['Close'][i]
             newTradingEnv.data['Low'][i] = tradingEnv.data['Low'][i]
             newTradingEnv.data['High'][i] = tradingEnv.data['High'][i]
             newTradingEnv.data['Volume'][i] = tradingEnv.data['Volume'][i]
+            newTradingEnv.data['s2f'][i] = tradingEnv.data['s2f'][i]
         newTradingEnv.data['Open'] = newTradingEnv.data['Close'].shift(1)
         newTradingEnv.data['Open'][0] = tradingEnv.data['Open'][0]
 
@@ -148,9 +153,9 @@ class DataAugmentation:
         """
         Generate a set of new trading environments based on the data
         augmentation techniques implemented.
-        
+
         :param: - tradingEnv: Original trading environment to augment.
-        
+
         :return: - tradingEnvList: List of trading environments generated
                                    by data augmentation techniques.
         """

@@ -45,15 +45,14 @@ class TradingSimulator:
             raise SystemError("Please check the cryptocurrency specified.")
         
         tradingEnv = TradingEnv(cryptocurrency, startingDate, endingDate)
-        timeSeries = tradingEnv.data['Close']
-        stock_to_flow = tradingEnv.data['ratio']
-        analyser = ExploratoryDataAnalysis(timeSeries, stock_to_flow, cryptocurrency)
+        analyser = ExploratoryDataAnalysis(tradingEnv.data, cryptocurrency)
         analyser.plotTimeSeries()
         analyser.plot_daily_returns()
-        analyser.augmentedDickeyFullerTest()
+        # analyser.augmentedDickeyFullerTest()
         # analyser.bollingerBandStrategy1()
         analyser.bollingerBandStrategy2()
         analyser.plot_scarcity()
+        analyser.check_empty_dup()
 
 
     def aiTrain(self, strategyName, cryptocurrencyName, PARAM, 

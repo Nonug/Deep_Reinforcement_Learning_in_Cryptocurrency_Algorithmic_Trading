@@ -369,6 +369,7 @@ class TDQN:
         lowPrices = tradingData['Low'].tolist()
         highPrices = tradingData['High'].tolist()
         volumes = tradingData['Volume'].tolist()
+        s2f = tradingData['s2f'].tolist()
 
         # Retrieve the coefficients required for the normalization
         coefficients = []
@@ -406,6 +407,7 @@ class TDQN:
         lowPrices = [state[1][i] for i in range(len(state[1]))]
         highPrices = [state[2][i] for i in range(len(state[2]))]
         volumes = [state[3][i] for i in range(len(state[3]))]
+        s2f = [state[4][i] for i in range(len(state[4]))]
 
         # 1. Close price => returns => MinMax normalization
         returns = [(closePrices[i]-closePrices[i-1])/closePrices[i-1] for i in range(1, len(closePrices))]

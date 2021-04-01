@@ -4,10 +4,11 @@ from matplotlib import pyplot as plt
 from statsmodels.tsa.stattools import adfuller
 
 class ExploratoryDataAnalysis:
-	def __init__(self, timeSeries, stock_to_flow, symbol='btc'):
-		self.timeSeries = timeSeries
-		self.symbol = symbol
-		self.stock_to_flow = stock_to_flow
+	def __init__(self, data, symbol='btc'):
+		self.data = data
+		self.timeSeries = data['Close']
+		self.stock_to_flow = data['s2f']
+		self.symbol = symbol.upper()
 
 
 	# tdqn
@@ -18,6 +19,7 @@ class ExploratoryDataAnalysis:
 		plt.plot(self.timeSeries.index, self.timeSeries.values, color='blue')
 		plt.xlabel("Time")
 		plt.ylabel("Price")
+		plt.title(self.symbol+" Price 2014-2021")
 		plt.show()
 
 
@@ -113,29 +115,33 @@ class ExploratoryDataAnalysis:
 		upper_band.plot(label='Upper Band', ax=ax, lw=1)
 		lower_band.plot(label='Lower Band', ax=ax, lw=1)
 		plt.legend(loc='upper left')
+		plt.title(self.symbol+" Bollinger Band")
 
 
 	# https://github.com/guangzhixie/cryptocurrency-time-series/blob/master/Cryptocurrencies_EDA.ipynb
 	def plot_daily_returns(self):
 		daily_returns = (self.timeSeries / self.timeSeries.shift(1)) - 1
 		daily_returns.iloc[0,:] = 0
-		ax = daily_returns.plot(title="Daily returns", fontsize=12)
+		ax = daily_returns.plot(title=self.symbol+" Daily returns", fontsize=12)
 		ax.set_xlabel("Date")
 		ax.set_ylabel("Price")
 
 
+
 	def plot_scarcity(self):
 		plt.figure(figsize=(10, 4))
-		# # line plot
-		# plt.plot(self.stock_to_flow.values, self.timeSeries.values, color='blue')
-		# plt.loglog(self.stock_to_flow.values, self.timeSeries.values)
-		# plt.xlabel("stock-to-flow (scarcity)")
-		# plt.ylabel("market value")
 
-		# scatter plot
+		# # scatter plot
 		ax = plt.gca()
 		ax.scatter(self.stock_to_flow.values ,self.timeSeries.values, s=1)
-		ax.set_yscale('log')
-		ax.set_xscale('log')
+		# ax.set_yscale('log')
+		# ax.set_xscale('log')
 		plt.xlabel("stock-to-flow (scarcity)")
-		plt.ylabel("market value")
+		plt.ylabel("price")
+		plt.title(self.symbol+" Stock To Flow Against Price")
+
+	def check_empty_dup(self):
+		print("Number of empty elements: ")
+		print(self.data.isna().sum())
+		print("Number of duplicates: ")
+		print(len(self.data)-len(self.data.drop_duplicates()))

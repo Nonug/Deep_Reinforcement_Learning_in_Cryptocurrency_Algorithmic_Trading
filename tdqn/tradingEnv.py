@@ -20,7 +20,7 @@ class TradingEnv(gym.Env):
         exists = os.path.isfile(csvPath)
         if(exists):
             self.data = pd.read_csv(csvPath, header=0, index_col='Timestamp', parse_dates=True)
-        else:  
+        else:
             print(csvPath, "does not exist")
 
         # Interpolate in case of missing data
@@ -29,7 +29,7 @@ class TradingEnv(gym.Env):
         self.data.fillna(method='ffill', inplace=True)
         self.data.fillna(method='bfill', inplace=True)
         self.data.fillna(0, inplace=True)
-        
+
         # Set the trading activity dataframe
         self.data['Position'] = 0
         self.data['Action'] = 0
@@ -43,7 +43,7 @@ class TradingEnv(gym.Env):
                       self.data['Low'][0:stateLength].tolist(),
                       self.data['High'][0:stateLength].tolist(),
                       self.data['Volume'][0:stateLength].tolist(),
-                      # new feature
+                      self.data['s2f'][0:stateLength].tolist(),  # new feature
                       [0]]
         self.reward = 0.
         self.done = 0
@@ -70,13 +70,14 @@ class TradingEnv(gym.Env):
         self.data['Cash'] = self.data['Cash'][0]
         self.data['Money'] = self.data['Holdings'] + self.data['Cash']
         self.data['Returns'] = 0.
+        self.data
 
         # Reset the RL variables common to every OpenAI gym environments
         self.state = [self.data['Close'][0:self.stateLength].tolist(),
                       self.data['Low'][0:self.stateLength].tolist(),
                       self.data['High'][0:self.stateLength].tolist(),
                       self.data['Volume'][0:self.stateLength].tolist(),
-                      # new features
+                      self.data['s2f'][0:self.stateLength].tolist(),  # new features
                       [0]]
         self.reward = 0.
         self.done = 0
@@ -87,7 +88,7 @@ class TradingEnv(gym.Env):
 
         return self.state
 
-    
+
     def computeLowerBound(self, cash, numberOfShares, price):
         # GOAL: Compute the lower bound of the complete RL action space, i.e. the minimum number of share to trade.
 
@@ -98,15 +99,15 @@ class TradingEnv(gym.Env):
         else:
             lowerBound = deltaValues / (price * self.epsilon * (1 + self.transactionCosts))
         return lowerBound
-    
+
 
     def step(self, action):
         """
         GOAL: Transition to the next trading time step based on the
               trading position decision made (either long or short).
-        
-        INPUTS: - action: Trading decision (1 = long, 0 = short).    
-        
+
+        INPUTS: - action: Trading decision (1 = long, 0 = short).
+
         OUTPUTS: - state: RL state to be returned to the RL agent.
                  - reward: RL reward to be returned to the RL agent.
                  - done: RL episode termination signal (boolean).
@@ -190,7 +191,7 @@ class TradingEnv(gym.Env):
                       self.data['Volume'][self.t - self.stateLength : self.t].tolist(),
                       [self.data['Position'][self.t - 1]]]
         if(self.t == self.data.shape[0]):
-            self.done = 1  
+            self.done = 1
 
         # Same reasoning with the other action (exploration trick)
         otherAction = int(not bool(action))
@@ -250,7 +251,7 @@ class TradingEnv(gym.Env):
     def render(self):
         """
         GOAL: Illustrate graphically the trading activity, by plotting
-              both the evolution of the stock market price and the 
+              both the evolution of the stock market price and the
               evolution of the trading capital.
         """
 
@@ -261,10 +262,10 @@ class TradingEnv(gym.Env):
 
         # Plot the first graph -> Evolution of the stock market price
         self.data['Close'].plot(ax=ax1, color='blue', lw=2)
-        
+
         # Plot the second graph -> Evolution of the trading capital
         self.data['Money'].plot(ax=ax2, color='blue', lw=2)
-        
+
         # Generation of the two legends and plotting
         ax1.legend(["Price"])
         ax2.legend(["Capital"])
