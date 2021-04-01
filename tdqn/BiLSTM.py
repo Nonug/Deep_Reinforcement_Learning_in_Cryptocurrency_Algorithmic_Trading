@@ -28,7 +28,7 @@ class BiLSTM(nn.Module):
         self.device = torch.device('cuda:'+str(GPUNumber) if torch.cuda.is_available() else 'cpu')
         
     def forward(self, x):
-        x = x.unsqueeze(0)
+        x = x.reshape([x.shape[0], 1, x.shape[1]])
 
         # Set initial hidden states and cell states for LSTM)
         # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
