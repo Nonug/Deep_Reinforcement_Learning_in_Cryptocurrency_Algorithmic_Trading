@@ -20,7 +20,7 @@ class DuelingDQN(nn.Module):
         self.output_dim = output_dim
         
         self.feauture_layer = nn.Sequential(
-            nn.Linear(self.input_dim[0], 128),
+            nn.Linear(self.input_dim, 128),
             nn.ReLU(),
             nn.Linear(128, 128),
             nn.ReLU()

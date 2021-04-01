@@ -29,7 +29,6 @@ class LSTM(nn.Module):
         
     def forward(self, x):
         x = x.unsqueeze(0)
-        print(x.shape)
 
         # Set initial hidden states and cell states for LSTM)
         # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -48,7 +47,7 @@ class LSTM(nn.Module):
         x = x[:, -1, :]
         # x: (n, 128)
          
-        x = self.fc(out)
+        x = self.fc(x)
         # x: (n, 10)
         return x
   
