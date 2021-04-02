@@ -106,7 +106,7 @@ class TradingSimulator:
 
         # 3. TERMINATION PHASE
         if(saveStrategy):
-            fileName = os.path.join("Strategies", strategy+'_'+cryptocurrency)
+            fileName = os.path.join("Strategies", strategy+'_'+network+'_'+cryptocurrency)
             tradingStrategy.saveModel(fileName)
         return tradingStrategy, trainingEnv
 
@@ -179,17 +179,18 @@ class TradingSimulator:
         name = PARAM['name']
         stateLength = PARAM['stateLength']
         observationSpace = 1 + (stateLength-1)*numOfFeatures
+        network = PARAM['network']
 
 
         # 2. LOADING PHASE    
         # Check that the strategy to load exists in the strategy dataset
-        fileName = os.path.join("Strategies", strategy+'_'+trainCryptocurrency)
+        fileName = os.path.join("Strategies", strategy+'_'+network+'_'+trainCryptocurrency)
         exists = os.path.isfile(fileName)
         if exists:
             if ai:
                 strategyModule = importlib.import_module(strategy)
                 className = getattr(strategyModule, strategy)
-                tradingStrategy = className(observationSpace, actionSpace)
+                tradingStrategy = className(observationSpace, actionSpace, network)
                 tradingStrategy.loadModel(fileName)
             else:
                 fileHandler = open(fileName, 'rb') 
