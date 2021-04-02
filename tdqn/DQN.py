@@ -5,6 +5,9 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
+# Default paramter related to the hardware acceleration (CUDA)
+GPUNumber = 0
+
 
 ##############################################
 #################### TDQN ####################

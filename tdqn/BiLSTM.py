@@ -5,6 +5,9 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
+# Default paramter related to the hardware acceleration (CUDA)
+GPUNumber = 0
+
 
 ################################################
 #################### BiLSTM ####################
@@ -32,13 +35,12 @@ class BiLSTM(nn.Module):
 
         # Set initial hidden states and cell states for LSTM)
         # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(self.device) 
-        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(self.device) 
-        
+        h0 = torch.zeros(self.num_layers*2, x.size(0), self.hidden_size).to(self.device) 
+        c0 = torch.zeros(self.num_layers*2, x.size(0), self.hidden_size).to(self.device)
         # x: (n, 28, 28), h0: (2, n, 128)
         
         # Forward propagate RNN
-        x, _ = self.lstm(x, (h0,c0))  
+        x, _ = self.lstm(x, (h0,c0))
         
         # x: tensor of shape (batch_size, seq_length, hidden_size)
         # x: (n, 28, 128)

@@ -20,12 +20,12 @@ version for interim prototype
 * action space = 2
 * state = ['Close',"Low","High","Volume","s2f"]
 * basic TDQN 
+* experiments on different network can be carry out by including network in the param
 * no eth test because haven't scraped eth s2f
-* experiments on different network can be carry out by including network in the training param
 
 
 ## problems
-* 
+* BiLSTM and ConvDuelingDQN do not work, I believe it's easier to debug for BiLSTM
 
 
 ## Authors

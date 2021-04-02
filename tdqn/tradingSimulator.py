@@ -184,7 +184,10 @@ class TradingSimulator:
 
         # 2. LOADING PHASE    
         # Check that the strategy to load exists in the strategy dataset
-        fileName = os.path.join("Strategies", strategy+'_'+network+'_'+trainCryptocurrency)
+        if ai:
+            fileName = os.path.join("Strategies", strategy+'_'+network+'_'+trainCryptocurrency)
+        else:
+            fileName = os.path.join("Strategies", strategy+'_'+trainCryptocurrency)
         exists = os.path.isfile(fileName)
         if exists:
             if ai:

@@ -5,6 +5,9 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
+# Default paramter related to the hardware acceleration (CUDA)
+GPUNumber = 0
+
 
 ##############################################
 #################### LSTM ####################
@@ -34,12 +37,10 @@ class LSTM(nn.Module):
         # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(self.device) 
         c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(self.device)
-        
         # x: (batch_size, input_size, sequence_length), h0: (num_layers, n, hidden_size)
         
         # Forward propagate RNN
         x, _ = self.lstm(x, (h0,c0))  
-        
         # x: (batch_size, seq_length, hidden_size)
         
         # Decode the hidden state of the last time step
