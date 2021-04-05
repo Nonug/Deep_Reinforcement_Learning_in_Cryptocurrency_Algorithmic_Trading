@@ -17,10 +17,12 @@ GPUNumber = 0
 
 class BiLSTM(nn.Module):
 
-    def __init__(self, input_size, hidden_size, num_layers, output_size):
+    def __init__(self, input_size, sequence_length, hidden_size, num_layers, output_size):
 
         super(BiLSTM, self).__init__()
-
+        self.device = torch.device('cuda:'+str(GPUNumber) if torch.cuda.is_available() else 'cpu')
+        self.input_size = input_size
+        self.sequence_length = sequence_length
         self.num_layers = num_layers
         self.hidden_size = hidden_size
 
@@ -28,10 +30,10 @@ class BiLSTM(nn.Module):
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True, bidirectional=True) 
         
         self.fc = nn.Linear(2*hidden_size, output_size)
-        self.device = torch.device('cuda:'+str(GPUNumber) if torch.cuda.is_available() else 'cpu')
         
     def forward(self, x):
-        x = x.reshape([x.shape[0], 1, x.shape[1]])
+        x = x[:, :-1]
+        x = x.reshape([x.shape[0], self.sequence_length, self.input_size])
 
         # Set initial hidden states and cell states for LSTM)
         # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

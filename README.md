@@ -16,16 +16,19 @@ etherscan<br/>
 1. Run the jupyter notebooks in `tdqn` to construct the tdqn model
 
 ## version
-version for interim prototype
+version for final work
 * action space = 2
 * state = ['Close',"Low","High","Volume","s2f"]
-* basic TDQN 
-* experiments on different network can be carry out by including network in the param
-* no eth test because haven't scraped eth s2f
+* network = {"DQN", "LSTM", "BiLSTM", "DuelingDQN"}
+* cross validation is implemented
 
-
-## problems
-* BiLSTM and ConvDuelingDQN do not work, I believe it's easier to debug for BiLSTM
+## todos
+* ConvDuelingDQN
+* regularisation, dropout layer, early stopping
+* continuous action space
+* modify Sharpe ratio reward
+* experiments on reducing state space
+* optimization
 
 
 ## Authors

@@ -17,11 +17,12 @@ GPUNumber = 0
 
 class LSTM(nn.Module):
 
-    def __init__(self, input_size, hidden_size, num_layers, output_size):
+    def __init__(self, input_size, sequence_length, hidden_size, num_layers, output_size):
 
         super(LSTM, self).__init__()
         self.device = torch.device('cuda:'+str(GPUNumber) if torch.cuda.is_available() else 'cpu')
-
+        self.input_size = input_size
+        self.sequence_length = sequence_length
         self.num_layers = num_layers
         self.hidden_size = hidden_size
 
@@ -31,23 +32,24 @@ class LSTM(nn.Module):
         self.fc = nn.Linear(hidden_size, output_size)
         
     def forward(self, x):
-        x = x.reshape([x.shape[0], 1, x.shape[1]])
+        x = x[:, :-1]
+        x = x.reshape([x.shape[0], self.sequence_length, self.input_size])
 
         # Set initial hidden states and cell states for LSTM)
         # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(self.device) 
         c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(self.device)
-        # x: (batch_size, input_size, sequence_length), h0: (num_layers, n, hidden_size)
+        # x: (batch_size, sequence_length, input_size), h0: (num_layers, n, hidden_size)
         
         # Forward propagate RNN
         x, _ = self.lstm(x, (h0,c0))  
-        # x: (batch_size, seq_length, hidden_size)
+        # x: (batch_size, input_size, hidden_size)
         
         # Decode the hidden state of the last time step
         x = x[:, -1, :]
         # x: (batch_size, hidden_size)
          
         x = self.fc(x)
-        # x: (batch_size, 2)
+        # x: (batch_size, output_size)
         return x
   

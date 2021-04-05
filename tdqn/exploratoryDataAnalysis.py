@@ -20,6 +20,7 @@ class ExploratoryDataAnalysis:
 		plt.xlabel("Time")
 		plt.ylabel("Price")
 		plt.title(self.symbol+" Price 2014-2021")
+		plt.yscale('log')
 		plt.show()
 
 

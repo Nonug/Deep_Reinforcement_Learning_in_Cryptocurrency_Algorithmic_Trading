@@ -200,10 +200,12 @@ class TDQN:
                                      (Epsilon-Greedy exploration technique).        
     """
 
-    def __init__(self, observationSpace, actionSpace, network="DQN", numberOfNeurons=numberOfNeurons, dropout=dropout, 
-                 gamma=gamma, learningRate=learningRate, targetNetworkUpdate=targetNetworkUpdate,
-                 epsilonStart=epsilonStart, epsilonEnd=epsilonEnd, epsilonDecay=epsilonDecay,
-                 capacity=capacity, batchSize=batchSize):
+    def __init__(self, observationSpace, actionSpace, network="DQN", stateLength=0, numOfFeatures=0, 
+                 numberOfNeurons=numberOfNeurons, dropout=dropout, gamma=gamma, learningRate=learningRate, 
+                 targetNetworkUpdate=targetNetworkUpdate, epsilonStart=epsilonStart, epsilonEnd=epsilonEnd, 
+                 epsilonDecay=epsilonDecay, capacity=capacity, batchSize=batchSize, alpha=alpha, 
+                 filterOrder=filterOrder, gradientClipping=gradientClipping, rewardClipping=rewardClipping,
+                 L2Factor=L2Factor):
         """
         GOAL: Initializing the RL agent based on the DQN Reinforcement Learning
               algorithm, by setting up the DQN algorithm parameters as well as 
@@ -234,6 +236,13 @@ class TDQN:
         # Check availability of CUDA for the hardware (CPU or GPU)
         self.device = torch.device('cuda:'+str(GPUNumber) if torch.cuda.is_available() else 'cpu')
 
+        # Set both the observation and action spaces
+        self.observationSpace = observationSpace
+        self.actionSpace = actionSpace
+        self.network = network
+        self.stateLength = stateLength
+        self.numOfFeatures = numOfFeatures
+
         # Set the general parameters of the DQN algorithm
         self.gamma = gamma
         self.learningRate = learningRate
@@ -244,11 +253,11 @@ class TDQN:
         self.batchSize = batchSize
         self.replayMemory = ReplayMemory(capacity)
 
-        # Set both the observation and action spaces
-        self.observationSpace = observationSpace
-        self.actionSpace = actionSpace
-
-        self.network = network
+        self.alpha = alpha
+        self.filterOrder = filterOrder
+        self.gradientClipping = gradientClipping
+        self.rewardClipping = rewardClipping
+        self.L2Factor = L2Factor
 
         # Set the two Deep Neural Networks of the DQN algorithm (policy and target)
         networkModule = importlib.import_module(network)
@@ -257,11 +266,11 @@ class TDQN:
             self.policyNetwork = className(observationSpace, actionSpace, numberOfNeurons, dropout).to(self.device)
             self.targetNetwork = className(observationSpace, actionSpace, numberOfNeurons, dropout).to(self.device)
         elif (network=="LSTM"):
-            self.policyNetwork = className(observationSpace, numberOfNeurons, 1, actionSpace).to(self.device)
-            self.targetNetwork = className(observationSpace, numberOfNeurons, 1, actionSpace).to(self.device)
+            self.policyNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 1, actionSpace).to(self.device)
+            self.targetNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 1, actionSpace).to(self.device)
         elif (network=="BiLSTM"):
-            self.policyNetwork = className(observationSpace, numberOfNeurons, 1, actionSpace).to(self.device)
-            self.targetNetwork = className(observationSpace, numberOfNeurons, 1, actionSpace).to(self.device)
+            self.policyNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 1, actionSpace).to(self.device)
+            self.targetNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 1, actionSpace).to(self.device)
         elif (network=="DuelingDQN"):
             self.policyNetwork = className(observationSpace, actionSpace).to(self.device)
             self.targetNetwork = className(observationSpace, actionSpace).to(self.device)
@@ -539,8 +548,8 @@ class TDQN:
             self.policyNetwork.eval()
 
 
-    def training(self, trainingEnv, name="", trainingParameters=[], endingDate='2019-01-01',
-                 verbose=False, rendering=False, plotTraining=False, showPerformance=False):
+    def training(self, trainingEnv, name="", trainingParameters=[], verbose=False, 
+                rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the RL trading agent by interacting with its trading environment.
         
@@ -578,7 +587,6 @@ class TDQN:
             money = trainingEnv.data['Money'][0]
             stateLength = trainingEnv.stateLength
             transactionCosts = trainingEnv.transactionCosts
-            testingEnv = TradingEnv(marketSymbol, startingDate, endingDate, money, stateLength=stateLength, transactionCosts=transactionCosts)
             performanceTest = []
 
         try:
@@ -653,13 +661,6 @@ class TDQN:
                     performanceTrain.append(performance)
                     self.writer.add_scalar('Training performance (Sharpe Ratio)', performance, episode)
                     trainingEnv.reset()
-                    # Testing set performance
-                    testingEnv = self.testing(trainingEnv, testingEnv)
-                    analyser = PerformanceEstimator(testingEnv.data)
-                    performance = analyser.computeSharpeRatio()
-                    performanceTest.append(performance)
-                    self.writer.add_scalar('Validation performance (Sharpe Ratio)', performance, episode)
-                    testingEnv.reset()
         
         except KeyboardInterrupt:
             print()
@@ -679,8 +680,7 @@ class TDQN:
             fig = plt.figure()
             ax = fig.add_subplot(111, ylabel='Performance (Sharpe Ratio)', xlabel='Episode')
             ax.plot(performanceTrain)
-            ax.plot(performanceTest)
-            ax.legend(["Training", "Validation"])
+            ax.legend(["Training"])
             plt.savefig(os.path.join("Figures", name+"_performance.png"))
             for i in range(len(trainingEnvList)):
                 self.plotTraining(score[i][:episode], name)
@@ -788,166 +788,6 @@ class TDQN:
         ax1.legend(['Short', 'Long'])
         plt.savefig(os.path.join('Figures', name+"_Qvalues.png"))
 
-
-    def plotExpectedPerformance(self, trainingEnv, name="", trainingParameters=[], iterations=10):
-        """
-        GOAL: Plot the expected performance of the intelligent DRL trading agent.
-        
-        INPUTS: - trainingEnv: Training RL environment (known).
-                - trainingParameters: Additional parameters associated
-                                      with the training phase (e.g. the number
-                                      of episodes). 
-                - iterations: Number of training/testing iterations to compute
-                              the expected performance.
-        
-        OUTPUTS: - trainingEnv: Training RL environment.
-        """
-
-        # Preprocessing of the training set
-        dataAugmentation = DataAugmentation()
-        trainingEnvList = dataAugmentation.generate(trainingEnv)
-
-        # Save the initial Deep Neural Network weights
-        initialWeights =  copy.deepcopy(self.policyNetwork.state_dict())
-
-        # Initialization of some variables tracking both training and testing performances
-        performanceTrain = np.zeros((trainingParameters[0], iterations))
-        performanceTest = np.zeros((trainingParameters[0], iterations))
-
-        # Initialization of the testing trading environment
-        marketSymbol = trainingEnv.marketSymbol
-        startingDate = trainingEnv.endingDate
-        endingDate = '2020-01-01'
-        money = trainingEnv.data['Money'][0]
-        stateLength = trainingEnv.stateLength
-        transactionCosts = trainingEnv.transactionCosts
-        testingEnv = TradingEnv(marketSymbol, startingDate, endingDate, money, stateLength, transactionCosts)
-
-        # Print the hardware selected for the training of the Deep Neural Network (either CPU or GPU)
-        print("Hardware selected for training: " + str(self.device))
-      
-        try:
-
-            # Apply the training/testing procedure for the number of iterations specified
-            for iteration in range(iterations):
-
-                # Print the progression
-                print(''.join(["Expected performance evaluation progression: ", str(iteration+1), "/", str(iterations)]))
-
-                # Training phase for the number of episodes specified as parameter
-                for episode in tqdm(range(trainingParameters[0])):
-
-                    # For each episode, train on the entire set of training environments
-                    for i in range(len(trainingEnvList)):
-                        
-                        # Set the initial RL variables
-                        coefficients = self.getNormalizationCoefficients(trainingEnvList[i])
-                        trainingEnvList[i].reset()
-                        startingPoint = random.randrange(len(trainingEnvList[i].data.index))
-                        state = self.processState(trainingEnvList[i].state, coefficients)
-                        previousAction = 0
-                        done = 0
-                        stepsCounter = 0
-
-                        # Interact with the training environment until termination
-                        while done == 0:
-
-                            # Choose an action according to the RL policy and the current RL state
-                            action, _, _ = self.chooseActionEpsilonGreedy(state, previousAction)
-                            
-                            # Interact with the environment with the chosen action
-                            nextState, reward, done, info = trainingEnvList[i].step(action)
-
-                            # Process the RL variables retrieved and insert this new experience into the Experience Replay memory
-                            reward = self.processReward(reward)
-                            nextState = self.processState(nextState, coefficients)
-                            self.replayMemory.push(state, action, reward, nextState, done)
-
-                            # Trick for better exploration
-                            otherAction = int(not bool(action))
-                            otherReward = self.processReward(info['Reward'])
-                            otherDone = info['Done']
-                            otherNextState = self.processState(info['State'], coefficients)
-                            self.replayMemory.push(state, otherAction, otherReward, otherNextState, otherDone)
-
-                            # Execute the DQN learning procedure
-                            stepsCounter += 1
-                            if stepsCounter == learningUpdatePeriod:
-                                self.learning()
-                                stepsCounter = 0
-
-                            # Update the RL state
-                            state = nextState
-                            previousAction = action
-                
-                    # Compute both training and testing  current performances
-                    trainingEnv = self.testing(trainingEnv, trainingEnv)
-                    analyser = PerformanceEstimator(trainingEnv.data)
-                    performanceTrain[episode][iteration] = analyser.computeSharpeRatio()
-                    self.writer.add_scalar('Training performance (Sharpe Ratio)', performanceTrain[episode][iteration], episode)     
-                    testingEnv = self.testing(trainingEnv, testingEnv)
-                    analyser = PerformanceEstimator(testingEnv.data)
-                    performanceTest[episode][iteration] = analyser.computeSharpeRatio()
-                    self.writer.add_scalar('Testing performance (Sharpe Ratio)', performanceTest[episode][iteration], episode)
-
-                # Restore the initial state of the intelligent RL agent
-                if iteration < (iterations-1):
-                    trainingEnv.reset()
-                    testingEnv.reset()
-                    self.policyNetwork.load_state_dict(initialWeights)
-                    self.targetNetwork.load_state_dict(initialWeights)
-                    self.optimizer = optim.Adam(self.policyNetwork.parameters(), lr=learningRate, weight_decay=L2Factor)
-                    self.replayMemory.reset()
-                    self.iterations = 0
-                    stepsCounter = 0
-            
-            iteration += 1
-        
-        except KeyboardInterrupt:
-            print()
-            print("WARNING: Expected performance evaluation prematurely interrupted...")
-            print()
-            self.policyNetwork.eval()
-
-        # Compute the expected performance of the intelligent DRL trading agent
-        expectedPerformanceTrain = []
-        expectedPerformanceTest = []
-        stdPerformanceTrain = []
-        stdPerformanceTest = []
-        for episode in range(trainingParameters[0]):
-            expectedPerformanceTrain.append(np.mean(performanceTrain[episode][:iteration]))
-            expectedPerformanceTest.append(np.mean(performanceTest[episode][:iteration]))
-            stdPerformanceTrain.append(np.std(performanceTrain[episode][:iteration]))
-            stdPerformanceTest.append(np.std(performanceTest[episode][:iteration]))
-        expectedPerformanceTrain = np.array(expectedPerformanceTrain)
-        expectedPerformanceTest = np.array(expectedPerformanceTest)
-        stdPerformanceTrain = np.array(stdPerformanceTrain)
-        stdPerformanceTest = np.array(stdPerformanceTest)
-
-        # Plot each training/testing iteration performance of the intelligent DRL trading agent
-        for i in range(iteration):
-            fig = plt.figure()
-            ax = fig.add_subplot(111, ylabel='Performance (Sharpe Ratio)', xlabel='Episode')
-            ax.plot([performanceTrain[e][i] for e in range(trainingParameters[0])])
-            ax.plot([performanceTest[e][i] for e in range(trainingParameters[0])])
-            ax.legend(["Training", "Testing"])
-            plt.savefig(os.path.join("Figures", name+"_TrainingTestingPerformance"+str(i+1)+".png"))
-
-        # Plot the expected performance of the intelligent DRL trading agent
-        fig = plt.figure()
-        ax = fig.add_subplot(111, ylabel='Performance (Sharpe Ratio)', xlabel='Episode')
-        ax.plot(expectedPerformanceTrain)
-        ax.plot(expectedPerformanceTest)
-        ax.fill_between(range(len(expectedPerformanceTrain)), expectedPerformanceTrain-stdPerformanceTrain, expectedPerformanceTrain+stdPerformanceTrain, alpha=0.25)
-        ax.fill_between(range(len(expectedPerformanceTest)), expectedPerformanceTest-stdPerformanceTest, expectedPerformanceTest+stdPerformanceTest, alpha=0.25)
-        ax.legend(["Training", "Testing"])
-        plt.savefig(os.path.join('Figures', name+"_TrainingTestingExpectedPerformance.png"))
-
-        # Closing of the tensorboard writer
-        self.writer.close()
-        
-        return trainingEnv
-
         
     def saveModel(self, fileName):
         """
@@ -972,20 +812,3 @@ class TDQN:
 
         self.policyNetwork.load_state_dict(torch.load(fileName, map_location=self.device))
         self.targetNetwork.load_state_dict(self.policyNetwork.state_dict())
-
-
-    def plotEpsilonAnnealing(self):
-        """
-        GOAL: Plot the annealing behaviour of the Epsilon variable
-              (Epsilon-Greedy exploration technique).
-        
-        INPUTS: /
-        
-        OUTPUTS: /
-        """
-
-        plt.figure()
-        plt.plot([self.epsilonValue(i) for i in range(10*epsilonDecay)])
-        plt.xlabel("Iterations")
-        plt.ylabel("Epsilon value")
-        plt.savefig(os.path.join("Figures","Epsilon"))

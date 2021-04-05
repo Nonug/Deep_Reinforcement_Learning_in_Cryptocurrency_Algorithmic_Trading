@@ -66,10 +66,13 @@ class TradingSimulator:
             raise SystemError("Please check the cryptocurrency specified.")
 
         # initialize variables
+        strategy = strategiesAI[strategyName]
         startingDate = PARAM['startingDate']
         endingDate = PARAM['endingDate']
         money = PARAM['money']
-        strategy = strategiesAI[strategyName]
+        transactionCosts=PARAM['transactionCosts']
+        name = PARAM['name']
+        network = PARAM['network']
         stateLength = PARAM['stateLength']
         observationSpace = 1 + (stateLength-1)*numOfFeatures
         numberOfEpisodes = PARAM['numberOfEpisodes']
@@ -81,28 +84,32 @@ class TradingSimulator:
         capacity = PARAM['capacity']
         batchSize = PARAM['batchSize']
         experiencesRequired = PARAM['experiencesRequired']
+        numberOfNeurons = PARAM['numberOfNeurons']
+        dropout = PARAM['dropout']
         epsilonStart = PARAM['epsilonStart']
         epsilonEnd = PARAM['epsilonEnd']
         epsilonDecay = PARAM['epsilonDecay']
-        transactionCosts=PARAM['transactionCosts']
-        name = PARAM['name']
-        network = PARAM['network']
+        alpha = PARAM['alpha']
+        filterOrder = PARAM['filterOrder']
+        gradientClipping = PARAM['gradientClipping']
+        rewardClipping = PARAM['rewardClipping']
+        L2Factor = PARAM['L2Factor']
 
 
         # 2. TRAINING PHASE
         # Initialize the trading environment associated with the training phase
-        trainingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, money, name, stateLength, transactionCosts)
+        trainingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, money, name, stateLength, 
+                                transactionCosts)
         # Instanciate the strategy classes
         strategyModule = importlib.import_module(str(strategy))
         className = getattr(strategyModule, strategy)
-        tradingStrategy = className(observationSpace, actionSpace, network, gamma=gamma, learningRate=learningRate,
-                                    targetNetworkUpdate=targetNetworkUpdate, epsilonStart=epsilonStart, 
-                                    epsilonEnd=epsilonEnd, epsilonDecay=epsilonDecay, capacity=capacity, 
-                                    batchSize=batchSize)
+        tradingStrategy = className(observationSpace, actionSpace, network, stateLength, numOfFeatures, 
+                                    numberOfNeurons, gamma, learningRate, targetNetworkUpdate, epsilonStart, 
+                                    epsilonEnd, epsilonDecay, capacity, batchSize, alpha, filterOrder,
+                                    gradientClipping, rewardClipping, L2Factor)
         # Training of the trading strategy
-        trainingEnv = tradingStrategy.training(trainingEnv, name, trainingParameters=trainingParameters,
-                                               verbose=verbose, rendering=rendering,
-                                               plotTraining=plotTraining, showPerformance=showPerformance)
+        trainingEnv = tradingStrategy.training(trainingEnv, name, trainingParameters, verbose, rendering,
+                                               plotTraining, showPerformance)
 
         # 3. TERMINATION PHASE
         if(saveStrategy):
@@ -136,14 +143,15 @@ class TradingSimulator:
 
         # 2. TRAINING PHASE
         # Initialize the trading environment associated with the training phase
-        trainingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, money, name, stateLength, transactionCosts)
+        trainingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, money, name, stateLength, 
+                                transactionCosts)
         # Instanciate the strategy classes
         strategyModule = importlib.import_module('classicalStrategy')
         className = getattr(strategyModule, strategy)
         tradingStrategy = className()
         # Training of the trading strategy
         trainingEnv = tradingStrategy.training(trainingEnv, name, trainingParameters=trainingParameters,
-                                               endingDate=endingDate, verbose=verbose, rendering=rendering,
+                                               verbose=verbose, rendering=rendering,
                                                plotTraining=plotTraining, showPerformance=showPerformance)
         
         # 3. TERMINATION PHASE
@@ -154,7 +162,56 @@ class TradingSimulator:
         return tradingStrategy, trainingEnv
 
 
-    def test(self, strategyName, trainCryptocurrencyName, testCryptocurrencyName, PARAM, 
+    def aiTrainWithCrossValidation(self, strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM, 
+        verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True):
+        validationName = VALIDATION_PARAM['name']
+        TRAIN_PARAM['startingDate'] = "2014-01-01"
+        TRAIN_PARAM['endingDate'] = "2015-01-01"
+        print("Training1")
+        self.aiTrain(strategyName, cryptocurrencyName, TRAIN_PARAM)
+        VALIDATION_PARAM['name'] = validationName + '1'
+        VALIDATION_PARAM['startingDate'] = "2015-01-01"
+        VALIDATION_PARAM['endingDate'] = "2019-01-01"
+        print("Validation1")
+        self.test(strategyName, cryptocurrencyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM)
+
+        TRAIN_PARAM['startingDate'] = "2014-01-01"
+        TRAIN_PARAM['endingDate'] = "2016-01-01"
+        print("Training2")
+        self.aiTrain(strategyName, cryptocurrencyName, TRAIN_PARAM)
+        VALIDATION_PARAM['name'] = validationName + '2'
+        VALIDATION_PARAM['startingDate'] = "2016-01-01"
+        VALIDATION_PARAM['endingDate'] = "2019-01-01"
+        print("Validation2")
+        self.test(strategyName, cryptocurrencyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM)
+
+        TRAIN_PARAM['startingDate'] = "2014-01-01"
+        TRAIN_PARAM['endingDate'] = "2017-01-01"
+        print("Training3")
+        self.aiTrain(strategyName, cryptocurrencyName, TRAIN_PARAM)
+        VALIDATION_PARAM['name'] = validationName + '3'
+        VALIDATION_PARAM['startingDate'] = "2017-01-01"
+        VALIDATION_PARAM['endingDate'] = "2019-01-01"
+        print("Validation3")
+        self.test(strategyName, cryptocurrencyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM)
+
+        TRAIN_PARAM['startingDate'] = "2014-01-01"
+        TRAIN_PARAM['endingDate'] = "2018-01-01"
+        print("Training4")
+        self.aiTrain(strategyName, cryptocurrencyName, TRAIN_PARAM)
+        VALIDATION_PARAM['name'] = validationName + '4'
+        VALIDATION_PARAM['startingDate'] = "2018-01-01"
+        VALIDATION_PARAM['endingDate'] = "2019-01-01"
+        print("Validation4")
+        self.test(strategyName, cryptocurrencyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM)
+
+        TRAIN_PARAM['startingDate'] = "2014-01-01"
+        TRAIN_PARAM['endingDate'] = "2019-01-01"
+        print("Training5")
+        self.aiTrain(strategyName, cryptocurrencyName, TRAIN_PARAM)
+
+
+    def test(self, strategyName, trainCryptocurrencyName, testCryptocurrencyName, TRAIN_PARAM, TEST_PARAM, 
             rendering=True, showPerformance=True):
 
         # 1. INITIALIZATION PHASE
@@ -171,15 +228,23 @@ class TradingSimulator:
             trainCryptocurrency = cryptocurrencies[trainCryptocurrencyName]
         else:
             raise SystemError("Please check the cryptocurrency specified.")
+
         # initialize variables
-        startingDate = PARAM['startingDate']
-        endingDate = PARAM['endingDate']
-        money = PARAM['money']
-        transactionCosts = PARAM['transactionCosts']
-        name = PARAM['name']
-        stateLength = PARAM['stateLength']
+        trainStartingDate = TRAIN_PARAM['startingDate']
+        trainEndingDate = TRAIN_PARAM['endingDate']
+        trainMoney = TRAIN_PARAM['money']
+        trainTransactionCosts = TRAIN_PARAM['transactionCosts']
+        trainName = TRAIN_PARAM['name']
+        trainStateLength = TRAIN_PARAM['stateLength']
+
+        startingDate = TEST_PARAM['startingDate']
+        endingDate = TEST_PARAM['endingDate']
+        money = TEST_PARAM['money']
+        transactionCosts = TEST_PARAM['transactionCosts']
+        name = TEST_PARAM['name']
+        stateLength = TEST_PARAM['stateLength']
         observationSpace = 1 + (stateLength-1)*numOfFeatures
-        network = PARAM['network']
+        network = TEST_PARAM['network']
 
 
         # 2. LOADING PHASE    
@@ -193,7 +258,7 @@ class TradingSimulator:
             if ai:
                 strategyModule = importlib.import_module(strategy)
                 className = getattr(strategyModule, strategy)
-                tradingStrategy = className(observationSpace, actionSpace, network)
+                tradingStrategy = className(observationSpace, actionSpace, network, stateLength, numOfFeatures)
                 tradingStrategy.loadModel(fileName)
             else:
                 fileHandler = open(fileName, 'rb') 
@@ -204,8 +269,13 @@ class TradingSimulator:
 
         # 3. TESTING PHASE
         # Initialize the trading environments associated with the testing phase
-        testingEnv = TradingEnv(testCryptocurrency, startingDate, endingDate, money, name, stateLength, transactionCosts)
-        testingEnv = tradingStrategy.testing(testingEnv, testingEnv, name, rendering=rendering, showPerformance=showPerformance)
+        trainingEnv = TradingEnv(trainCryptocurrency, trainStartingDate, trainEndingDate, trainMoney, 
+                                trainName, trainStateLength, trainTransactionCosts)
+        testingEnv = TradingEnv(testCryptocurrency, startingDate, endingDate, money, name, stateLength, 
+                                transactionCosts)
+        testingEnv = tradingStrategy.testing(trainingEnv, testingEnv, name, rendering=rendering, 
+                                            showPerformance=showPerformance)
+        
         # log training result
         path = os.path.join('log', testCryptocurrency+'_'+startingDate+'_'+endingDate+'_'+name+'_result.csv')
         logDF = testingEnv.data

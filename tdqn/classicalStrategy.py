@@ -12,6 +12,7 @@ Institution: University of Liège
 
 import math
 import numpy as np
+import os
 
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -56,7 +57,7 @@ class tradingStrategy(ABC):
     
 
     @abstractmethod
-    def training(self, trainingEnv, name="", trainingParameters=[], endingDate='2020-01-01',
+    def training(self, trainingEnv, name="", trainingParameters=[],
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -135,7 +136,7 @@ class BuyAndHold(tradingStrategy):
         return 1
     
 
-    def training(self, trainingEnv, name="", trainingParameters=[], endingDate='2020-01-01',
+    def training(self, trainingEnv, name="", trainingParameters=[],
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -257,7 +258,7 @@ class SellAndHold(tradingStrategy):
         return 0
     
 
-    def training(self, trainingEnv, name="", trainingParameters=[], endingDate='2020-01-01',
+    def training(self, trainingEnv, name="", trainingParameters=[],
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -433,7 +434,7 @@ class MovingAveragesTF(tradingStrategy):
             return 0
     
 
-    def training(self, trainingEnv, name="", trainingParameters=[], endingDate='2020-01-01',
+    def training(self, trainingEnv, name="", trainingParameters=[], 
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -707,7 +708,7 @@ class MovingAveragesMR(tradingStrategy):
             return 0
     
 
-    def training(self, trainingEnv, name="", trainingParameters=[], endingDate='2020-01-01',
+    def training(self, trainingEnv, name="", trainingParameters=[],
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
@@ -873,8 +874,7 @@ class MovingAveragesMR(tradingStrategy):
         # Generate and show the surface 3D surface plot
         ax.plot_surface(xx, yy, results, cmap=plt.cm.get_cmap('jet'))
         ax.view_init(45, 45)
-        plt.savefig(''.join(['Figures/', str(marketSymbol), '_MAMROptimization3D', '.png']))
-        #plt.show()
+        plt.savefig(os.path.join("Figures", str(marketSymbol)+'_MAMROptimization3D.png'))
 
         # Plot the same information as a 2D graph
         fig = plt.figure(figsize=(10, 10))
@@ -886,6 +886,4 @@ class MovingAveragesMR(tradingStrategy):
                           extent=(bounds[0], bounds[1], bounds[1], bounds[0]))
         plt.colorbar(graph)
         plt.gca().invert_yaxis()
-        plt.savefig(''.join(['Figures/', str(marketSymbol), '_MAMROptimization2D', '.png']))
-        #plt.show()
-        
+        plt.savefig(os.path.join("Figures", str(marketSymbol)+'_MAMROptimization2D.png'))
