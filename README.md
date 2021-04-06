@@ -23,11 +23,11 @@ version for final work
 * cross validation is implemented
 
 ## todos
-* ConvDuelingDQN
+* ConvDuelingDQN (idk how to modify it properly)
+* reducing state space by sequential backward selection
 * regularisation, dropout layer, early stopping
 * continuous action space
 * modify Sharpe ratio reward
-* experiments on reducing state space
 * optimization
 
 

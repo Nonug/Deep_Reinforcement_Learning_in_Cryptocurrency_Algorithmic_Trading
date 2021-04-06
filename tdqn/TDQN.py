@@ -275,8 +275,8 @@ class TDQN:
             self.policyNetwork = className(observationSpace, actionSpace).to(self.device)
             self.targetNetwork = className(observationSpace, actionSpace).to(self.device)
         elif (network=="ConvDuelingDQN"):
-            self.policyNetwork = className(observationSpace, actionSpace).to(self.device)
-            self.targetNetwork = className(observationSpace, actionSpace).to(self.device)
+            self.policyNetwork = className(1, stateLength-1, numOfFeatures, actionSpace).to(self.device)
+            self.targetNetwork = className(1, stateLength-1, numOfFeatures, actionSpace).to(self.device)
 
         self.targetNetwork.load_state_dict(self.policyNetwork.state_dict())
         self.policyNetwork.eval()
