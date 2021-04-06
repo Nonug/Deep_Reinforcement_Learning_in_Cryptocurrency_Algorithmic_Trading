@@ -1,0 +1,309 @@
+Training1
+
+  0%|          | 0/50 [00:00<?, ?it/s]
+
+Training progression (hardware selected => cuda:0):
+
+100%|██████████| 50/50 [05:49<00:00,  6.98s/it]
+
+╒═══════════════════════════╤══════════╕
+│   Performance Indicator   │   TDQN   │
+╞═══════════════════════════╪══════════╡
+│    Profit & Loss (P&L)    │  -61101  │
+├───────────────────────────┼──────────┤
+│     Annualized Return     │ -69.40%  │
+├───────────────────────────┼──────────┤
+│   Annualized Volatility   │  58.88%  │
+├───────────────────────────┼──────────┤
+│       Sharpe Ratio        │  -0.813  │
+├───────────────────────────┼──────────┤
+│       Sortino Ratio       │  -1.116  │
+├───────────────────────────┼──────────┤
+│     Maximum Drawdown      │  62.76%  │
+├───────────────────────────┼──────────┤
+│ Maximum Drawdown Duration │ 331 days │
+├───────────────────────────┼──────────┤
+│       Profitability       │  20.00%  │
+├───────────────────────────┼──────────┤
+│ Ratio Average Profit/Loss │  0.029   │
+├───────────────────────────┼──────────┤
+│         Skewness          │  0.415   │
+╘═══════════════════════════╧══════════╛
+Validation1
+╒═══════════════════════════╤══════════╕
+│   Performance Indicator   │   TDQN   │
+╞═══════════════════════════╪══════════╡
+│    Profit & Loss (P&L)    │ 2457246  │
+├───────────────────────────┼──────────┤
+│     Annualized Return     │  51.51%  │
+├───────────────────────────┼──────────┤
+│   Annualized Volatility   │  59.64%  │
+├───────────────────────────┼──────────┤
+│       Sharpe Ratio        │  1.235   │
+├───────────────────────────┼──────────┤
+│       Sortino Ratio       │  1.656   │
+├───────────────────────────┼──────────┤
+│     Maximum Drawdown      │  75.27%  │
+├───────────────────────────┼──────────┤
+│ Maximum Drawdown Duration │ 364 days │
+├───────────────────────────┼──────────┤
+│       Profitability       │  40.00%  │
+├───────────────────────────┼──────────┤
+│ Ratio Average Profit/Loss │  2.167   │
+├───────────────────────────┼──────────┤
+│         Skewness          │  0.329   │
+╘═══════════════════════════╧══════════╛
+Training2
+
+  0%|          | 0/50 [00:00<?, ?it/s]
+
+Training progression (hardware selected => cuda:0):
+
+100%|██████████| 50/50 [12:00<00:00, 14.41s/it]
+
+╒═══════════════════════════╤═════════╕
+│   Performance Indicator   │  TDQN   │
+╞═══════════════════════════╪═════════╡
+│    Profit & Loss (P&L)    │  46126  │
+├───────────────────────────┼─────────┤
+│     Annualized Return     │ 20.32%  │
+├───────────────────────────┼─────────┤
+│   Annualized Volatility   │ 21.63%  │
+├───────────────────────────┼─────────┤
+│       Sharpe Ratio        │  0.713  │
+├───────────────────────────┼─────────┤
+│       Sortino Ratio       │  0.890  │
+├───────────────────────────┼─────────┤
+│     Maximum Drawdown      │ 24.59%  │
+├───────────────────────────┼─────────┤
+│ Maximum Drawdown Duration │ 54 days │
+├───────────────────────────┼─────────┤
+│       Profitability       │ 100.00% │
+├───────────────────────────┼─────────┤
+│ Ratio Average Profit/Loss │   inf   │
+├───────────────────────────┼─────────┤
+│         Skewness          │  0.257  │
+╘═══════════════════════════╧═════════╛
+Validation2
+╒═══════════════════════════╤══════════╕
+│   Performance Indicator   │   TDQN   │
+╞═══════════════════════════╪══════════╡
+│    Profit & Loss (P&L)    │ -100359  │
+├───────────────────────────┼──────────┤
+│     Annualized Return     │ -100.00% │
+├───────────────────────────┼──────────┤
+│   Annualized Volatility   │ 127.21%  │
+├───────────────────────────┼──────────┤
+│       Sharpe Ratio        │  -0.858  │
+├───────────────────────────┼──────────┤
+│       Sortino Ratio       │  -0.444  │
+├───────────────────────────┼──────────┤
+│     Maximum Drawdown      │ 100.54%  │
+├───────────────────────────┼──────────┤
+│ Maximum Drawdown Duration │ 357 days │
+├───────────────────────────┼──────────┤
+│       Profitability       │  0.00%   │
+├───────────────────────────┼──────────┤
+│ Ratio Average Profit/Loss │  0.000   │
+├───────────────────────────┼──────────┤
+│         Skewness          │ -10.363  │
+╘═══════════════════════════╧══════════╛
+Training3
+
+  0%|          | 0/50 [00:00<?, ?it/s]
+
+Training progression (hardware selected => cuda:0):
+
+100%|██████████| 50/50 [18:18<00:00, 21.98s/it]
+
+╒═══════════════════════════╤══════════╕
+│   Performance Indicator   │   TDQN   │
+╞═══════════════════════════╪══════════╡
+│    Profit & Loss (P&L)    │  20329   │
+├───────────────────────────┼──────────┤
+│     Annualized Return     │  21.47%  │
+├───────────────────────────┼──────────┤
+│   Annualized Volatility   │  52.63%  │
+├───────────────────────────┼──────────┤
+│       Sharpe Ratio        │  0.346   │
+├───────────────────────────┼──────────┤
+│       Sortino Ratio       │  0.427   │
+├───────────────────────────┼──────────┤
+│     Maximum Drawdown      │  78.61%  │
+├───────────────────────────┼──────────┤
+│ Maximum Drawdown Duration │ 346 days │
+├───────────────────────────┼──────────┤
+│       Profitability       │ 100.00%  │
+├───────────────────────────┼──────────┤
+│ Ratio Average Profit/Loss │   inf    │
+├───────────────────────────┼──────────┤
+│         Skewness          │  -0.133  │
+╘═══════════════════════════╧══════════╛
+Validation3
+╒═══════════════════════════╤══════════╕
+│   Performance Indicator   │   TDQN   │
+╞═══════════════════════════╪══════════╡
+│    Profit & Loss (P&L)    │  285459  │
+├───────────────────────────┼──────────┤
+│     Annualized Return     │  76.00%  │
+├───────────────────────────┼──────────┤
+│   Annualized Volatility   │  71.93%  │
+├───────────────────────────┼──────────┤
+│       Sharpe Ratio        │  1.004   │
+├───────────────────────────┼──────────┤
+│       Sortino Ratio       │  1.442   │
+├───────────────────────────┼──────────┤
+│     Maximum Drawdown      │  83.47%  │
+├───────────────────────────┼──────────┤
+│ Maximum Drawdown Duration │ 364 days │
+├───────────────────────────┼──────────┤
+│       Profitability       │ 100.00%  │
+├───────────────────────────┼──────────┤
+│ Ratio Average Profit/Loss │   inf    │
+├───────────────────────────┼──────────┤
+│         Skewness          │  0.356   │
+╘═══════════════════════════╧══════════╛
+Training4
+
+  0%|          | 0/50 [00:00<?, ?it/s]
+
+Training progression (hardware selected => cuda:0):
+
+100%|██████████| 50/50 [24:32<00:00, 29.45s/it]
+
+╒═══════════════════════════╤═════════╕
+│   Performance Indicator   │  TDQN   │
+╞═══════════════════════════╪═════════╡
+│    Profit & Loss (P&L)    │ 1277054 │
+├───────────────────────────┼─────────┤
+│     Annualized Return     │ 47.00%  │
+├───────────────────────────┼─────────┤
+│   Annualized Volatility   │ 60.15%  │
+├───────────────────────────┼─────────┤
+│       Sharpe Ratio        │  1.052  │
+├───────────────────────────┼─────────┤
+│       Sortino Ratio       │  1.381  │
+├───────────────────────────┼─────────┤
+│     Maximum Drawdown      │ 42.17%  │
+├───────────────────────────┼─────────┤
+│ Maximum Drawdown Duration │ 15 days │
+├───────────────────────────┼─────────┤
+│       Profitability       │ 33.33%  │
+├───────────────────────────┼─────────┤
+│ Ratio Average Profit/Loss │  5.166  │
+├───────────────────────────┼─────────┤
+│         Skewness          │  0.285  │
+╘═══════════════════════════╧═════════╛
+Validation4
+╒═══════════════════════════╤══════════╕
+│   Performance Indicator   │   TDQN   │
+╞═══════════════════════════╪══════════╡
+│    Profit & Loss (P&L)    │  -57209  │
+├───────────────────────────┼──────────┤
+│     Annualized Return     │ -64.14%  │
+├───────────────────────────┼──────────┤
+│   Annualized Volatility   │  53.39%  │
+├───────────────────────────┼──────────┤
+│       Sharpe Ratio        │  -0.828  │
+├───────────────────────────┼──────────┤
+│       Sortino Ratio       │  -1.063  │
+├───────────────────────────┼──────────┤
+│     Maximum Drawdown      │  66.23%  │
+├───────────────────────────┼──────────┤
+│ Maximum Drawdown Duration │ 285 days │
+├───────────────────────────┼──────────┤
+│       Profitability       │  0.00%   │
+├───────────────────────────┼──────────┤
+│ Ratio Average Profit/Loss │  0.000   │
+├───────────────────────────┼──────────┤
+│         Skewness          │  -0.150  │
+╘═══════════════════════════╧══════════╛
+Training5
+
+  0%|          | 0/50 [00:00<?, ?it/s]
+
+Training progression (hardware selected => cuda:0):
+
+100%|██████████| 50/50 [30:37<00:00, 36.75s/it]
+/userhome/cs/u3569279/COMP3359_GP15_Deep_Reinforcement_Learning_in_Cryptocurrency_Algorithmic_Trading/tdqn/tradingEnv.py:266: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`).
+  fig = plt.figure(figsize=(10, 8))
+/userhome/cs/u3569279/COMP3359_GP15_Deep_Reinforcement_Learning_in_Cryptocurrency_Algorithmic_Trading/tdqn/TDQN.py:680: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`).
+  fig = plt.figure()
+/userhome/cs/u3569279/COMP3359_GP15_Deep_Reinforcement_Learning_in_Cryptocurrency_Algorithmic_Trading/tdqn/TDQN.py:767: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`).
+  fig = plt.figure()
+
+╒═══════════════════════════╤══════════╕
+│   Performance Indicator   │   TDQN   │
+╞═══════════════════════════╪══════════╡
+│    Profit & Loss (P&L)    │ -114629  │
+├───────────────────────────┼──────────┤
+│     Annualized Return     │ -100.00% │
+├───────────────────────────┼──────────┤
+│   Annualized Volatility   │  85.89%  │
+├───────────────────────────┼──────────┤
+│       Sharpe Ratio        │  -0.304  │
+├───────────────────────────┼──────────┤
+│       Sortino Ratio       │  -0.188  │
+├───────────────────────────┼──────────┤
+│     Maximum Drawdown      │ 105.30%  │
+├───────────────────────────┼──────────┤
+│ Maximum Drawdown Duration │ 529 days │
+├───────────────────────────┼──────────┤
+│       Profitability       │  47.37%  │
+├───────────────────────────┼──────────┤
+│ Ratio Average Profit/Loss │  0.655   │
+├───────────────────────────┼──────────┤
+│         Skewness          │ -13.585  │
+╘═══════════════════════════╧══════════╛
+
+
+testing:
+╒═══════════════════════════╤══════════╕
+│   Performance Indicator   │   TDQN   │
+╞═══════════════════════════╪══════════╡
+│    Profit & Loss (P&L)    │  -98717  │
+├───────────────────────────┼──────────┤
+│     Annualized Return     │ -100.00% │
+├───────────────────────────┼──────────┤
+│   Annualized Volatility   │ 110.67%  │
+├───────────────────────────┼──────────┤
+│       Sharpe Ratio        │  -1.261  │
+├───────────────────────────┼──────────┤
+│       Sortino Ratio       │  -0.408  │
+├───────────────────────────┼──────────┤
+│     Maximum Drawdown      │ 105.16%  │
+├───────────────────────────┼──────────┤
+│ Maximum Drawdown Duration │ 93 days  │
+├───────────────────────────┼──────────┤
+│       Profitability       │  0.00%   │
+├───────────────────────────┼──────────┤
+│ Ratio Average Profit/Loss │  0.000   │
+├───────────────────────────┼──────────┤
+│         Skewness          │ -16.431  │
+╘═══════════════════════════╧══════════╛
+
+
+backtesting:
+╒═══════════════════════════╤══════════╕
+│   Performance Indicator   │   TDQN   │
+╞═══════════════════════════╪══════════╡
+│    Profit & Loss (P&L)    │ -114629  │
+├───────────────────────────┼──────────┤
+│     Annualized Return     │ -100.00% │
+├───────────────────────────┼──────────┤
+│   Annualized Volatility   │  72.58%  │
+├───────────────────────────┼──────────┤
+│       Sharpe Ratio        │  -0.257  │
+├───────────────────────────┼──────────┤
+│       Sortino Ratio       │  -0.134  │
+├───────────────────────────┼──────────┤
+│     Maximum Drawdown      │ 105.30%  │
+├───────────────────────────┼──────────┤
+│ Maximum Drawdown Duration │ 529 days │
+├───────────────────────────┼──────────┤
+│       Profitability       │  47.37%  │
+├───────────────────────────┼──────────┤
+│ Ratio Average Profit/Loss │  0.655   │
+├───────────────────────────┼──────────┤
+│         Skewness          │ -16.089  │
+╘═══════════════════════════╧══════════╛
