@@ -9,7 +9,7 @@ from exploratoryDataAnalysis import ExploratoryDataAnalysis
 
 
 # define default variables
-numOfFeatures = 4 #reduce state
+numOfFeatures = 4 # reduce state
 actionSpace = 2
 bounds = [1, 30]
 step = 1
