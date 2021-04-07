@@ -314,7 +314,7 @@ class TDQN:
         lowPrices = tradingData['Low'].tolist()
         highPrices = tradingData['High'].tolist()
         volumes = tradingData['Volume'].tolist()
-        s2f = tradingData['s2f'].tolist()
+        # s2f = tradingData['s2f'].tolist() # reduce state
 
         # Retrieve the coefficients required for the normalization
         coefficients = []
@@ -333,9 +333,9 @@ class TDQN:
         # 4. Volumes => minimum and maximum values
         coeffs = (np.min(volumes)/margin, np.max(volumes)*margin)
         coefficients.append(coeffs)
-        # 5. s2f 
-        coeffs = (np.min(s2f)/margin, np.max(s2f)*margin)
-        coefficients.append(coeffs)
+        # 5. s2f # reduce state
+        # coeffs = (np.min(s2f)/margin, np.max(s2f)*margin)
+        # coefficients.append(coeffs)
         
         return coefficients
 
@@ -355,7 +355,7 @@ class TDQN:
         lowPrices = [state[1][i] for i in range(len(state[1]))]
         highPrices = [state[2][i] for i in range(len(state[2]))]
         volumes = [state[3][i] for i in range(len(state[3]))]
-        s2f = [state[4][i] for i in range(len(state[4]))]
+        # s2f = [state[4][i] for i in range(len(state[4]))] # reduce state
 
         # 1. Close price => returns => MinMax normalization
         returns = [(closePrices[i]-closePrices[i-1])/closePrices[i-1] for i in range(1, len(closePrices))]
@@ -388,12 +388,12 @@ class TDQN:
             state[3] = [((x - coefficients[3][0])/(coefficients[3][1] - coefficients[3][0])) for x in volumes]
         else:
             state[3] = [0 for x in volumes]
-        # 5. s2f
-        s2f = [s2f[i] for i in range(1, len(s2f))]
-        if coefficients[4][0] != coefficients[3][1]:
-            state[4] = [((x - coefficients[4][0])/(coefficients[4][1] - coefficients[4][0])) for x in s2f]
-        else:
-            state[4] = [0 for x in s2f]
+        # 5. s2f # reduce state
+        # s2f = [s2f[i] for i in range(1, len(s2f))]
+        # if coefficients[4][0] != coefficients[3][1]:
+        #     state[4] = [((x - coefficients[4][0])/(coefficients[4][1] - coefficients[4][0])) for x in s2f]
+        # else:
+        #     state[4] = [0 for x in s2f]
         
         # Process the state structure to obtain the appropriate format
         state = [item for sublist in state for item in sublist]
