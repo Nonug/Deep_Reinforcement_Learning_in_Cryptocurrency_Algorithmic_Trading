@@ -42,7 +42,7 @@ class TradingEnv(gym.Env):
         self.state = [self.data['Close'][0:stateLength].tolist(),
                       self.data['Low'][0:stateLength].tolist(),
                       self.data['High'][0:stateLength].tolist(),
-                      # self.data['Volume'][0:stateLength].tolist(),
+                      self.data['Volume'][0:stateLength].tolist(),
                       self.data['s2f'][0:stateLength].tolist(),  # reduce state
                       [0]]
         self.reward = 0.
@@ -76,7 +76,7 @@ class TradingEnv(gym.Env):
         self.state = [self.data['Close'][0:self.stateLength].tolist(),
                       self.data['Low'][0:self.stateLength].tolist(),
                       self.data['High'][0:self.stateLength].tolist(),
-                      # self.data['Volume'][0:self.stateLength].tolist(),
+                      self.data['Volume'][0:self.stateLength].tolist(),
                       self.data['s2f'][0:self.stateLength].tolist(),  # reduce state
                       [0]]
         self.reward = 0.
@@ -188,7 +188,7 @@ class TradingEnv(gym.Env):
         self.state = [self.data['Close'][self.t - self.stateLength : self.t].tolist(),
                       self.data['Low'][self.t - self.stateLength : self.t].tolist(),
                       self.data['High'][self.t - self.stateLength : self.t].tolist(),
-                      # self.data['Volume'][self.t - self.stateLength : self.t].tolist(),
+                      self.data['Volume'][self.t - self.stateLength : self.t].tolist(),
                       self.data['s2f'][self.t - self.stateLength : self.t].tolist(), # reduce state
                       [self.data['Position'][self.t - 1]]]
         if(self.t == self.data.shape[0]):
@@ -241,7 +241,7 @@ class TradingEnv(gym.Env):
         otherState = [self.data['Close'][self.t - self.stateLength : self.t].tolist(),
                       self.data['Low'][self.t - self.stateLength : self.t].tolist(),
                       self.data['High'][self.t - self.stateLength : self.t].tolist(),
-                      # self.data['Volume'][self.t - self.stateLength : self.t].tolist(),
+                      self.data['Volume'][self.t - self.stateLength : self.t].tolist(),
                       self.data['s2f'][self.t - self.stateLength : self.t].tolist(), # reduce state
                       [otherPosition]]
         self.info = {'State' : otherState, 'Reward' : otherReward, 'Done' : self.done}
