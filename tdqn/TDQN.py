@@ -390,7 +390,7 @@ class TDQN:
             state[3] = [0 for x in volumes]
         # 5. s2f # reduce state
         s2f = [s2f[i] for i in range(1, len(s2f))]
-        if coefficients[4][0] != coefficients[3][1]:
+        if coefficients[4][0] != coefficients[4][1]:
             state[4] = [((x - coefficients[4][0])/(coefficients[4][1] - coefficients[4][0])) for x in s2f]
         else:
             state[4] = [0 for x in s2f]
