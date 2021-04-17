@@ -272,11 +272,11 @@ class TDQN:
             self.policyNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 1, actionSpace).to(self.device)
             self.targetNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 1, actionSpace).to(self.device)
         elif (network=="DuelingDQN"):
-            self.policyNetwork = className(observationSpace, actionSpace).to(self.device)
-            self.targetNetwork = className(observationSpace, actionSpace).to(self.device)
+            self.policyNetwork = className(observationSpace, actionSpace, dropout).to(self.device)
+            self.targetNetwork = className(observationSpace, actionSpace, dropout).to(self.device)
         elif (network=="ConvDuelingDQN"):
-            self.policyNetwork = className(1, stateLength-1, numOfFeatures, actionSpace).to(self.device)
-            self.targetNetwork = className(1, stateLength-1, numOfFeatures, actionSpace).to(self.device)
+            self.policyNetwork = className(1, stateLength-1, numOfFeatures, actionSpace, dropout).to(self.device)
+            self.targetNetwork = className(1, stateLength-1, numOfFeatures, actionSpace, dropout).to(self.device)
 
         self.targetNetwork.load_state_dict(self.policyNetwork.state_dict())
         self.policyNetwork.eval()

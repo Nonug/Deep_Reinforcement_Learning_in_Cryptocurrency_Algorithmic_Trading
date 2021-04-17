@@ -60,24 +60,31 @@ GPUNumber = 0
 
 # https://github.com/dxyang/DQN_pytorch
 class ConvDuelingDQN(nn.Module):
-    def __init__(self, in_channels, h, w, num_actions):
+    def __init__(self, in_channels, h, w, num_actions, dropout):
         super(ConvDuelingDQN, self).__init__()
         self.in_channels = in_channels
         self.h = h
         self.w = w
         self.num_actions = num_actions
         
-        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=32, kernel_size=3, stride=4)
-        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=1, stride=2)
-        self.conv3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=1, stride=1)
+        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=32, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=1, padding=1)
+        self.conv3 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size=1, stride=1)
 
-        self.fc1_adv = nn.Linear(in_features=7*7*64, out_features=512)
-        self.fc1_val = nn.Linear(in_features=7*7*64, out_features=512)
+        self.fc1_adv = nn.Linear(in_features=h*w*128, out_features=512)
+        self.fc1_val = nn.Linear(in_features=h*w*128, out_features=512)
+
+        self.dropout1 = nn.Dropout(dropout)
 
         self.fc2_adv = nn.Linear(in_features=512, out_features=num_actions)
         self.fc2_val = nn.Linear(in_features=512, out_features=1)
 
         self.relu = nn.ReLU()
+
+        nn.init.xavier_uniform_(self.fc1_adv.weight)
+        nn.init.xavier_uniform_(self.fc1_val.weight)
+        nn.init.xavier_uniform_(self.fc2_adv.weight)
+        nn.init.xavier_uniform_(self.fc2_val.weight)
 
     def forward(self, x):
         # x with shape (minibatch,in_channels,iH,iW)
@@ -92,6 +99,8 @@ class ConvDuelingDQN(nn.Module):
 
         adv = self.relu(self.fc1_adv(x))
         val = self.relu(self.fc1_val(x))
+        adv = self.dropout1(adv)
+        val = self.dropout1(val)
 
         adv = self.fc2_adv(adv)
         val = self.fc2_val(val).expand(x.size(0), self.num_actions)
