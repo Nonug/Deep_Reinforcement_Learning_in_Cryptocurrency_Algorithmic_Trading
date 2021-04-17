@@ -14,18 +14,19 @@ tensorboard<br />
 etherscan<br/>
 
 ## Usage
-1. Run the jupyter notebooks in different `tdqn` to construct tdqn models in different versions
+1. Run the `tdqn.ipynb` in `tdqn` to construct the tdqn model
 
 ## This version
 * action space = 2
 * default state = ['Close',"Low","High","Volume","s2f"]
 * network = {"DQN", "LSTM", "BiLSTM", "DuelingDQN", "ConvDuelingDQN"}
-* cross validation is implemented
+* time series split cross validation is implemented
+* dropout layers are added
 * different folders for reducing state space
+* randomized search optimization is implemented(without ploting)
 
 ## todos
-* reducing state space by sequential backward selection, and record the results in `useful_results`
-* regularisation, dropout layer, early stopping
+* early stopping
 * continuous action space
 * modify Sharpe ratio reward
 * optimization

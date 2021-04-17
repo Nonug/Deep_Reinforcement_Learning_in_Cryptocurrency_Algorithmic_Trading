@@ -3,6 +3,7 @@ import importlib
 import pickle
 import numpy as np
 import pandas as pd
+import random
 
 from tradingEnv import TradingEnv
 from exploratoryDataAnalysis import ExploratoryDataAnalysis
@@ -30,10 +31,11 @@ strategiesAI = {
 
 class TradingSimulator:
     """
-    METHODS:    -exploratoryDataAnalysis
-                -aiTrain
-                -nonAiTrain
-                -test
+    METHODS:    -exploratoryDataAnalysis(self, cryptocurrencyName, startingDate, endingDate)
+                -aiTrain(self, strategyName, cryptocurrencyName, PARAM, verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True)
+                -aiTrainWithCrossValidation(self, strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM, verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True)
+                -nonAiTrain(self, strategyName, cryptocurrencyName, PARAM, verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True)
+                -test(self, strategyName, trainCryptocurrencyName, testCryptocurrencyName, TRAIN_PARAM, TEST_PARAM, rendering=True, showPerformance=True)
     """
 
 
@@ -55,6 +57,33 @@ class TradingSimulator:
 
     def aiTrain(self, strategyName, cryptocurrencyName, PARAM, 
         verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True):
+        # list of PARAM
+        # ['startingDate']
+        # ['endingDate']
+        # ['money']
+        # ['transactionCosts']
+        # ['name']
+        # ['network']
+        # ['stateLength']
+        # ['numberOfEpisodes']
+        # ['gamma']
+        # ['learningRate']
+        # ['targetNetworkUpdate']
+        # ['learningUpdatePeriod']
+        # ['capacity']
+        # ['batchSize']
+        # ['experiencesRequired']
+        # ['numberOfNeurons']
+        # ['dropout']
+        # ['epsilonStart']
+        # ['epsilonEnd']
+        # ['epsilonDecay']
+        # ['alpha']
+        # ['filterOrder']
+        # ['gradientClipping']
+        # ['rewardClipping']
+        # ['L2Factor']
+
 
         # 1. INITIALIZATION PHASE
         if(not (strategyName in strategiesAI)):
@@ -120,6 +149,14 @@ class TradingSimulator:
     
     def nonAiTrain(self, strategyName, cryptocurrencyName, PARAM, 
         verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True):
+        # list of PARAM        
+        # ['startingDate']
+        # ['endingDate']
+        # ['money']
+        # ['stateLength']
+        # ['transactionCosts']
+        # ['name']
+
 
         # 1. INITIALIZATION PHASE
         # Retrieve the trading strategy information
@@ -164,6 +201,38 @@ class TradingSimulator:
 
     def aiTrainWithCrossValidation(self, strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM, 
         verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True):
+        # list of TRAIN_PARAM
+        # ['money']
+        # ['transactionCosts']
+        # ['name']
+        # ['network']
+        # ['stateLength']
+        # ['numberOfEpisodes']
+        # ['gamma']
+        # ['learningRate']
+        # ['targetNetworkUpdate']
+        # ['learningUpdatePeriod']
+        # ['capacity']
+        # ['batchSize']
+        # ['experiencesRequired']
+        # ['numberOfNeurons']
+        # ['dropout']
+        # ['epsilonStart']
+        # ['epsilonEnd']
+        # ['epsilonDecay']
+        # ['alpha']
+        # ['filterOrder']
+        # ['gradientClipping']
+        # ['rewardClipping']
+        # ['L2Factor']
+
+        # list of VALIDATION_PARAM
+        # ['money']
+        # ['transactionCosts']
+        # ['name']
+        # ['stateLength']
+        # ['network']
+
         validationName = VALIDATION_PARAM['name']
         TRAIN_PARAM['startingDate'] = "2014-01-01"
         TRAIN_PARAM['endingDate'] = "2015-01-01"
@@ -213,6 +282,22 @@ class TradingSimulator:
 
     def test(self, strategyName, trainCryptocurrencyName, testCryptocurrencyName, TRAIN_PARAM, TEST_PARAM, 
             rendering=True, showPerformance=True):
+        # list of TRAIN_PARAM
+        # ['startingDate']
+        # ['endingDate']
+        # ['money']
+        # ['transactionCosts']
+        # ['name']
+        # ['stateLength']
+
+        # list of TEST_PARAM
+        # ['startingDate']
+        # ['endingDate']
+        # ['money']
+        # ['transactionCosts']
+        # ['name']
+        # ['stateLength']
+        # ['network']
 
         # 1. INITIALIZATION PHASE
         if(strategyName in strategies):
@@ -282,3 +367,71 @@ class TradingSimulator:
         logDF.to_csv(path)
 
         return tradingStrategy, testingEnv
+
+    def randomizedSearchOptimization(self, strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM, HYPERPARAM, numOfTrials,
+        verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True):
+        # list of TRAIN_PARAM
+        # ['money']
+        # ['transactionCosts']
+        # ['name']
+        # ['network']
+        # ['stateLength']
+        # ['numberOfEpisodes']
+        # ['targetNetworkUpdate']
+        # ['learningUpdatePeriod']
+        # ['capacity']
+        # ['batchSize']
+        # ['experiencesRequired']
+        # ['numberOfNeurons']
+        # ['epsilonStart']
+        # ['epsilonEnd']
+        # ['filterOrder']   
+        # ['gradientClipping']
+        # ['rewardClipping']
+
+        # list of VALIDATION_PARAM
+        # ['money']
+        # ['transactionCosts']
+        # ['name']
+        # ['stateLength']
+        # ['network']
+
+        # list of HYPERPARAM
+        # ['gamma']
+        # ['learningRate']
+        # ['dropout']
+        # ['epsilonDecay']
+        # ['alpha']
+        # ['L2Factor']
+
+        gammas = [random.uniform(HYPERPARAM['gamma'][0],HYPERPARAM['gamma'][1]) for _ in range(numOfTrials)]
+        learningRates = [random.uniform(HYPERPARAM['learningRate'][0],HYPERPARAM['learningRate'][1]) for _ in range(numOfTrials)]
+        dropouts = [random.uniform(HYPERPARAM['dropout'][0],HYPERPARAM['dropout'][1]) for _ in range(numOfTrials)]
+        epsilonDecays = [random.uniform(HYPERPARAM['epsilonDecay'][0],HYPERPARAM['epsilonDecay'][1]) for _ in range(numOfTrials)]
+        alphas = [random.uniform(HYPERPARAM['alpha'][0],HYPERPARAM['alpha'][1]) for _ in range(numOfTrials)]
+        L2Factors = [random.uniform(HYPERPARAM['L2Factor'][0],HYPERPARAM['L2Factor'][1]) for _ in range(numOfTrials)]
+
+        for i in range(numOfTrials):
+            TRAIN_PARAM['gamma'] = gammas[i]
+            TRAIN_PARAM['learningRate'] = learningRates[i]
+            TRAIN_PARAM['dropout'] = dropouts[i]
+            TRAIN_PARAM['epsilonDecay'] = epsilonDecays[i]
+            TRAIN_PARAM['alpha'] = alphas[i]
+            TRAIN_PARAM['L2Factor'] = L2Factors[i]
+            print(f"gamma: {gammas[i]}, learningRate: {learningRates[i]}, dropout: {dropouts[i]},\nepsilonDecay: {epsilonDecays[i]}, alpha: {alphas[i]}, L2Factor: {L2Factors[i]}")
+            self.aiTrainWithCrossValidation(strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM)
+
+        # for gamma in gammas:
+        #     for learningRate in learningRates:
+        #         for dropout in dropouts:
+        #             for epsilonDecay in epsilonDecays:
+        #                 for alpha in alphas:
+        #                     for L2Factor in L2Factors:
+        #                         TRAIN_PARAM['gamma'] = gamma
+        #                         TRAIN_PARAM['learningRate'] = learningRate
+        #                         TRAIN_PARAM['dropout'] = dropout
+        #                         TRAIN_PARAM['epsilonDecay'] = epsilonDecay
+        #                         TRAIN_PARAM['alpha'] = alpha
+        #                         TRAIN_PARAM['L2Factor'] = L2Factor
+        #                         print(f"gamma: {gamma}, learningRate: {learningRate}, dropout: {dropout},\nepsilonDecay: {epsilonDecay}, alpha: {alpha}, L2Factor: {L2Factor}")
+        #                         self.aiTrainWithCrossValidation(strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM)
