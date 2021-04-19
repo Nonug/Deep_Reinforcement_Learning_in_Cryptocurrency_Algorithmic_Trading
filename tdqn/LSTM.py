@@ -17,7 +17,7 @@ GPUNumber = 0
 
 class LSTM(nn.Module):
 
-    def __init__(self, input_size, sequence_length, hidden_size, num_layers, output_size):
+    def __init__(self, input_size, sequence_length, hidden_size, num_layers, output_size, dropout):
 
         super(LSTM, self).__init__()
         self.device = torch.device('cuda:'+str(GPUNumber) if torch.cuda.is_available() else 'cpu')
@@ -25,11 +25,13 @@ class LSTM(nn.Module):
         self.sequence_length = sequence_length
         self.num_layers = num_layers
         self.hidden_size = hidden_size
+        self.dropout = dropout
 
         # -> x needs to be: (batch_size, seq, input_size) for batch_first=True
-        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True) 
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True, dropout=dropout)
         
         self.fc = nn.Linear(hidden_size, output_size)
+        nn.init.xavier_uniform_(self.fc.weight)
         
     def forward(self, x):
         x = x[:, :-1]

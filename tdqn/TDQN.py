@@ -266,11 +266,11 @@ class TDQN:
             self.policyNetwork = className(observationSpace, actionSpace, numberOfNeurons, dropout).to(self.device)
             self.targetNetwork = className(observationSpace, actionSpace, numberOfNeurons, dropout).to(self.device)
         elif (network=="LSTM"):
-            self.policyNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 1, actionSpace).to(self.device)
-            self.targetNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 1, actionSpace).to(self.device)
+            self.policyNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 3, actionSpace, dropout).to(self.device)
+            self.targetNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 3, actionSpace, dropout).to(self.device)
         elif (network=="BiLSTM"):
-            self.policyNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 1, actionSpace).to(self.device)
-            self.targetNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 1, actionSpace).to(self.device)
+            self.policyNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 3, actionSpace).to(self.device)
+            self.targetNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 3, actionSpace).to(self.device)
         elif (network=="DuelingDQN"):
             self.policyNetwork = className(observationSpace, actionSpace, dropout).to(self.device)
             self.targetNetwork = className(observationSpace, actionSpace, dropout).to(self.device)
