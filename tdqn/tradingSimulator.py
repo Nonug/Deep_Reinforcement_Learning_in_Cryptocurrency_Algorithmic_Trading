@@ -11,7 +11,7 @@ from exploratoryDataAnalysis import ExploratoryDataAnalysis
 
 # define default variables
 numOfFeatures = 5 # reduce state
-actionSpace = 2
+actionSpace = 11
 bounds = [1, 30]
 step = 1
 cryptocurrencies = {
@@ -42,10 +42,10 @@ class TradingSimulator:
     def exploratoryDataAnalysis(self, cryptocurrencyName, startingDate, endingDate):
         # Retrieve the trading cryptocurrencies information
         if(cryptocurrencyName in cryptocurrencies):
-            cryptocurrency = cryptocurrencies[cryptocurrencyName]   
+            cryptocurrency = cryptocurrencies[cryptocurrencyName]
         else:
             raise SystemError("Please check the cryptocurrency specified.")
-        
+
         tradingEnv = TradingEnv(cryptocurrency, startingDate, endingDate)
         analyser = ExploratoryDataAnalysis(tradingEnv.data, cryptocurrency)
         analyser.plotTimeSeries()
@@ -55,7 +55,7 @@ class TradingSimulator:
         analyser.check_empty_duplicate()
 
 
-    def aiTrain(self, strategyName, cryptocurrencyName, PARAM, 
+    def aiTrain(self, strategyName, cryptocurrencyName, PARAM,
         verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True):
         # list of PARAM
         # ['startingDate']
@@ -90,7 +90,7 @@ class TradingSimulator:
             raise SystemError("Please check the trading strategy specified.")
         # Retrieve the trading cryptocurrencies information
         if(cryptocurrencyName in cryptocurrencies):
-            cryptocurrency = cryptocurrencies[cryptocurrencyName]   
+            cryptocurrency = cryptocurrencies[cryptocurrencyName]
         else:
             raise SystemError("Please check the cryptocurrency specified.")
 
@@ -127,13 +127,13 @@ class TradingSimulator:
 
         # 2. TRAINING PHASE
         # Initialize the trading environment associated with the training phase
-        trainingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, money, name, stateLength, 
+        trainingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, money, name, stateLength,
                                 transactionCosts)
         # Instanciate the strategy classes
         strategyModule = importlib.import_module(str(strategy))
         className = getattr(strategyModule, strategy)
-        tradingStrategy = className(observationSpace, actionSpace, network, stateLength, numOfFeatures, 
-                                    numberOfNeurons, gamma, learningRate, targetNetworkUpdate, epsilonStart, 
+        tradingStrategy = className(observationSpace, actionSpace, network, stateLength, numOfFeatures,
+                                    numberOfNeurons, gamma, learningRate, targetNetworkUpdate, epsilonStart,
                                     epsilonEnd, epsilonDecay, capacity, batchSize, alpha, filterOrder,
                                     gradientClipping, rewardClipping, L2Factor)
         # Training of the trading strategy
@@ -146,10 +146,10 @@ class TradingSimulator:
             tradingStrategy.saveModel(fileName)
         return tradingStrategy, trainingEnv
 
-    
-    def nonAiTrain(self, strategyName, cryptocurrencyName, PARAM, 
+
+    def nonAiTrain(self, strategyName, cryptocurrencyName, PARAM,
         verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True):
-        # list of PARAM        
+        # list of PARAM
         # ['startingDate']
         # ['endingDate']
         # ['money']
@@ -164,10 +164,10 @@ class TradingSimulator:
             raise SystemError("Please check the trading strategy specified.")
         # Retrieve the trading cryptocurrencies information
         if(cryptocurrencyName in cryptocurrencies):
-            cryptocurrency = cryptocurrencies[cryptocurrencyName]   
+            cryptocurrency = cryptocurrencies[cryptocurrencyName]
         else:
-            raise SystemError("Please check the cryptocurrency specified.")  
-        # initialize variables      
+            raise SystemError("Please check the cryptocurrency specified.")
+        # initialize variables
         startingDate = PARAM['startingDate']
         endingDate = PARAM['endingDate']
         money = PARAM['money']
@@ -180,7 +180,7 @@ class TradingSimulator:
 
         # 2. TRAINING PHASE
         # Initialize the trading environment associated with the training phase
-        trainingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, money, name, stateLength, 
+        trainingEnv = TradingEnv(cryptocurrency, startingDate, endingDate, money, name, stateLength,
                                 transactionCosts)
         # Instanciate the strategy classes
         strategyModule = importlib.import_module('classicalStrategy')
@@ -190,16 +190,16 @@ class TradingSimulator:
         trainingEnv = tradingStrategy.training(trainingEnv, name, trainingParameters=trainingParameters,
                                                verbose=verbose, rendering=rendering,
                                                plotTraining=plotTraining, showPerformance=showPerformance)
-        
+
         # 3. TERMINATION PHASE
         if(saveStrategy):
             fileName = os.path.join("Strategies", strategy+'_'+cryptocurrency)
-            fileHandler = open(fileName, 'wb') 
+            fileHandler = open(fileName, 'wb')
             pickle.dump(tradingStrategy, fileHandler)
         return tradingStrategy, trainingEnv
 
 
-    def aiTrainWithCrossValidation(self, strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM, 
+    def aiTrainWithCrossValidation(self, strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM,
         verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True):
         # list of TRAIN_PARAM
         # ['money']
@@ -280,7 +280,7 @@ class TradingSimulator:
         self.aiTrain(strategyName, cryptocurrencyName, TRAIN_PARAM)
 
 
-    def test(self, strategyName, trainCryptocurrencyName, testCryptocurrencyName, TRAIN_PARAM, TEST_PARAM, 
+    def test(self, strategyName, trainCryptocurrencyName, testCryptocurrencyName, TRAIN_PARAM, TEST_PARAM,
             rendering=True, showPerformance=True):
         # list of TRAIN_PARAM
         # ['startingDate']
@@ -332,7 +332,7 @@ class TradingSimulator:
         network = TEST_PARAM['network']
 
 
-        # 2. LOADING PHASE    
+        # 2. LOADING PHASE
         # Check that the strategy to load exists in the strategy dataset
         if ai:
             fileName = os.path.join("Strategies", strategy+'_'+network+'_'+trainCryptocurrency)
@@ -346,7 +346,7 @@ class TradingSimulator:
                 tradingStrategy = className(observationSpace, actionSpace, network, stateLength, numOfFeatures)
                 tradingStrategy.loadModel(fileName)
             else:
-                fileHandler = open(fileName, 'rb') 
+                fileHandler = open(fileName, 'rb')
                 tradingStrategy = pickle.load(fileHandler)
         else:
             raise SystemError("The trading strategy specified does not exist, please provide a valid one.")
@@ -354,13 +354,13 @@ class TradingSimulator:
 
         # 3. TESTING PHASE
         # Initialize the trading environments associated with the testing phase
-        trainingEnv = TradingEnv(trainCryptocurrency, trainStartingDate, trainEndingDate, trainMoney, 
+        trainingEnv = TradingEnv(trainCryptocurrency, trainStartingDate, trainEndingDate, trainMoney,
                                 trainName, trainStateLength, trainTransactionCosts)
-        testingEnv = TradingEnv(testCryptocurrency, startingDate, endingDate, money, name, stateLength, 
+        testingEnv = TradingEnv(testCryptocurrency, startingDate, endingDate, money, name, stateLength,
                                 transactionCosts)
-        testingEnv = tradingStrategy.testing(trainingEnv, testingEnv, name, rendering=rendering, 
+        testingEnv = tradingStrategy.testing(trainingEnv, testingEnv, name, rendering=rendering,
                                             showPerformance=showPerformance)
-        
+
         # log training result
         path = os.path.join('log', testCryptocurrency+'_'+startingDate+'_'+endingDate+'_'+name+'_result.csv')
         logDF = testingEnv.data
@@ -385,7 +385,7 @@ class TradingSimulator:
         # ['numberOfNeurons']
         # ['epsilonStart']
         # ['epsilonEnd']
-        # ['filterOrder']   
+        # ['filterOrder']
         # ['gradientClipping']
         # ['rewardClipping']
 
