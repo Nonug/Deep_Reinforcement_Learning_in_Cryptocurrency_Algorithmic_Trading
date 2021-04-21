@@ -53,7 +53,7 @@ filterOrder = 5
 gradientClipping = 1
 rewardClipping = 1
 
-# Default parameter related to the L2 Regularization 
+# Default parameter related to the L2 Regularization
 L2Factor = 0.000001
 
 # Default paramter related to the hardware acceleration (CUDA)
@@ -63,9 +63,9 @@ class ReplayMemory:
     """
     GOAL: Implementing the replay memory required for the Experience Replay
           mechanism of the DQN Reinforcement Learning algorithm.
-    
+
     VARIABLES:  - memory: Data structure storing the experiences.
-                                
+
     METHODS:    - __init__: Initialization of the memory data structure.
                 - push: Insert a new experience into the replay memory.
                 - sample: Sample a batch of experiences from the replay memory.
@@ -76,29 +76,29 @@ class ReplayMemory:
     def __init__(self, capacity=capacity):
         """
         GOAL: Initializating the replay memory data structure.
-        
+
         INPUTS: - capacity: Capacity of the data structure, specifying the
                             maximum number of experiences to be stored
                             simultaneously.
-        
+
         OUTPUTS: /
         """
 
         self.memory = deque(maxlen=capacity)
-    
+
 
     def push(self, state, action, reward, nextState, done):
         """
         GOAL: Insert a new experience into the replay memory. An experience
               is composed of a state, an action, a reward, a next state and
               a termination signal.
-        
+
         INPUTS: - state: RL state of the experience to be stored.
                 - action: RL action of the experience to be stored.
                 - reward: RL reward of the experience to be stored.
                 - nextState: RL next state of the experience to be stored.
                 - done: RL termination signal of the experience to be stored.
-        
+
         OUTPUTS: /
         """
 
@@ -108,9 +108,9 @@ class ReplayMemory:
     def sample(self, batchSize):
         """
         GOAL: Sample a batch of experiences from the replay memory.
-        
+
         INPUTS: - batchSize: Size of the batch to sample.
-        
+
         OUTPUTS: - state: RL states of the experience batch sampled.
                  - action: RL actions of the experience batch sampled.
                  - reward: RL rewards of the experience batch sampled.
@@ -126,9 +126,9 @@ class ReplayMemory:
         """
         GOAL: Return the capicity of the replay memory, which is the maximum number of
               experiences which can be simultaneously stored in the replay memory.
-        
+
         INPUTS: /
-        
+
         OUTPUTS: - length: Capacity of the replay memory.
         """
 
@@ -138,9 +138,9 @@ class ReplayMemory:
     def reset(self):
         """
         GOAL: Reset (empty) the replay memory.
-        
+
         INPUTS: /
-        
+
         OUTPUTS: /
         """
 
@@ -154,12 +154,12 @@ class TDQN:
     """
     GOAL: Implementing an intelligent trading agent based on the DQN
           Reinforcement Learning algorithm.
-    
+
     VARIABLES:  - device: Hardware specification (CPU or GPU).
                 - gamma: Discount factor of the DQN algorithm.
                 - learningRate: Learning rate of the ADAM optimizer.
                 - capacity: Capacity of the experience replay memory.
-                - batchSize: Size of the batch to sample from the replay memory. 
+                - batchSize: Size of the batch to sample from the replay memory.
                 - targetNetworkUpdate: Frequency at which the target neural
                                        network is updated.
                 - observationSpace: Size of the RL observation space.
@@ -172,7 +172,7 @@ class TDQN:
                 - epsilonValue: Value of the Epsilon, from the
                                 Epsilon-Greedy exploration technique.
                 - iterations: Counter of the number of iterations.
-                                
+
     METHODS:    - __init__: Initialization of the RL trading agent, by setting up
                             many variables and parameters.
                 - getNormalizationCoefficients: Retrieve the coefficients required
@@ -185,7 +185,7 @@ class TDQN:
                                 observed, according to the RL policy learned.
                 - chooseActionEpsilonGreedy: Choose a valid action based on the
                                              current state observed, according to
-                                             the RL policy learned, following the 
+                                             the RL policy learned, following the
                                              Epsilon Greedy exploration mechanism.
                 - learn: Sample a batch of experiences and learn from that info.
                 - training: Train the trading DQN agent by interacting with its
@@ -197,20 +197,20 @@ class TDQN:
                 - loadModel: Load the RL policy model.
                 - plotTraining: Plot the training results (score evolution, etc.).
                 - plotEpsilonAnnealing: Plot the annealing behaviour of the Epsilon
-                                     (Epsilon-Greedy exploration technique).        
+                                     (Epsilon-Greedy exploration technique).
     """
 
-    def __init__(self, observationSpace, actionSpace, network="DQN", stateLength=0, numOfFeatures=0, 
-                 numberOfNeurons=numberOfNeurons, dropout=dropout, gamma=gamma, learningRate=learningRate, 
-                 targetNetworkUpdate=targetNetworkUpdate, epsilonStart=epsilonStart, epsilonEnd=epsilonEnd, 
-                 epsilonDecay=epsilonDecay, capacity=capacity, batchSize=batchSize, alpha=alpha, 
+    def __init__(self, observationSpace, actionSpace, network="DQN", stateLength=0, numOfFeatures=0,
+                 numberOfNeurons=numberOfNeurons, dropout=dropout, gamma=gamma, learningRate=learningRate,
+                 targetNetworkUpdate=targetNetworkUpdate, epsilonStart=epsilonStart, epsilonEnd=epsilonEnd,
+                 epsilonDecay=epsilonDecay, capacity=capacity, batchSize=batchSize, alpha=alpha,
                  filterOrder=filterOrder, gradientClipping=gradientClipping, rewardClipping=rewardClipping,
                  L2Factor=L2Factor):
         """
         GOAL: Initializing the RL agent based on the DQN Reinforcement Learning
-              algorithm, by setting up the DQN algorithm parameters as well as 
+              algorithm, by setting up the DQN algorithm parameters as well as
               the DQN Deep Neural Network.
-        
+
         INPUTS: - observationSpace: Size of the RL observation space.
                 - actionSpace: Size of the RL action space.
                 - numberOfNeurons: Number of neurons per layer in the Deep Neural Network.
@@ -225,8 +225,8 @@ class TDQN:
                 - epsilonDecay: Decay factor (exponential) of Epsilon, from the
                                 Epsilon-Greedy exploration technique.
                 - capacity: Capacity of the Experience Replay memory.
-                - batchSize: Size of the batch to sample from the replay memory.        
-        
+                - batchSize: Size of the batch to sample from the replay memory.
+
         OUTPUTS: /
         """
 
@@ -234,6 +234,7 @@ class TDQN:
         random.seed(0)
 
         # Check availability of CUDA for the hardware (CPU or GPU)
+
         self.device = torch.device('cuda:'+str(GPUNumber) if torch.cuda.is_available() else 'cpu')
 
         # Set both the observation and action spaces
@@ -268,15 +269,10 @@ class TDQN:
         elif (network=="LSTM"):
             self.policyNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, actionSpace, dropout).to(self.device)
             self.targetNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, actionSpace, dropout).to(self.device)
-        elif (network=="BiLSTM"):
-            self.policyNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 3, actionSpace).to(self.device)
-            self.targetNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 3, actionSpace).to(self.device)
-        elif (network=="DuelingDQN"):
-            self.policyNetwork = className(observationSpace, actionSpace, dropout).to(self.device)
-            self.targetNetwork = className(observationSpace, actionSpace, dropout).to(self.device)
         elif (network=="ConvDuelingDQN"):
             self.policyNetwork = className(1, stateLength-1, numOfFeatures, actionSpace, dropout).to(self.device)
             self.targetNetwork = className(1, stateLength-1, numOfFeatures, actionSpace, dropout).to(self.device)
+
 
         self.targetNetwork.load_state_dict(self.policyNetwork.state_dict())
         self.policyNetwork.eval()
@@ -287,7 +283,7 @@ class TDQN:
 
         # Set the Epsilon-Greedy exploration technique
         self.epsilonValue = lambda iteration: epsilonEnd + (epsilonStart - epsilonEnd) * math.exp(-1 * iteration / epsilonDecay)
-        
+
         # Initialization of the iterations counter
         self.iterations = 0
 
@@ -297,14 +293,14 @@ class TDQN:
         training_log_dir = str(training_log_dir_path)
         self.writer = SummaryWriter(training_log_dir_path)
 
-    
+
     def getNormalizationCoefficients(self, tradingEnv):
         """
         GOAL: Retrieve the coefficients required for the normalization
               of input data.
-        
+
         INPUTS: - tradingEnv: RL trading environement to process.
-        
+
         OUTPUTS: - coefficients: Normalization coefficients.
         """
 
@@ -336,7 +332,7 @@ class TDQN:
         # 5. s2f # reduce state
         coeffs = (np.min(s2f)/margin, np.max(s2f)*margin)
         coefficients.append(coeffs)
-        
+
         return coefficients
 
 
@@ -344,9 +340,9 @@ class TDQN:
         """
         GOAL: Process the RL state returned by the environment
               (appropriate format and normalization).
-        
+
         INPUTS: - state: RL state returned by the environment.
-        
+
         OUTPUTS: - state: Processed RL state.
         """
 
@@ -394,35 +390,35 @@ class TDQN:
             state[4] = [((x - coefficients[4][0])/(coefficients[4][1] - coefficients[4][0])) for x in s2f]
         else:
             state[4] = [0 for x in s2f]
-        
+
         # Process the state structure to obtain the appropriate format
         state = [item for sublist in state for item in sublist]
 
         return state
 
-    
+
     def processReward(self, reward):
         """
         GOAL: Process the RL reward returned by the environment by clipping
               its value. Such technique has been shown to improve the stability
               the DQN algorithm.
-        
+
         INPUTS: - reward: RL reward returned by the environment.
-        
+
         OUTPUTS: - reward: Process RL reward.
         """
 
         return np.clip(reward, -rewardClipping, rewardClipping)
- 
+
 
     def updateTargetNetwork(self):
         """
         GOAL: Taking into account the update frequency (parameter), update the
               target Deep Neural Network by copying the policy Deep Neural Network
               parameters (weights, bias, etc.).
-        
+
         INPUTS: /
-        
+
         OUTPUTS: /
         """
 
@@ -436,9 +432,9 @@ class TDQN:
         """
         GOAL: Choose a valid RL action from the action space according to the
               RL policy as well as the current RL state observed.
-        
+
         INPUTS: - state: RL state returned by the environment.
-        
+
         OUTPUTS: - action: RL action chosen from the action space.
                  - Q: State-action value function associated.
                  - QValues: Array of all the Qvalues outputted by the
@@ -455,16 +451,16 @@ class TDQN:
             QValues = QValues.cpu().numpy()
             return action, Q, QValues
 
-    
+
     def chooseActionEpsilonGreedy(self, state, previousAction):
         """
         GOAL: Choose a valid RL action from the action space according to the
-              RL policy as well as the current RL state observed, following the 
+              RL policy as well as the current RL state observed, following the
               Epsilon Greedy exploration mechanism.
-        
+
         INPUTS: - state: RL state returned by the environment.
                 - previousAction: Previous RL action executed by the agent.
-        
+
         OUTPUTS: - action: RL action chosen from the action space.
                  - Q: State-action value function associated.
                  - QValues: Array of all the Qvalues outputted by the
@@ -473,36 +469,31 @@ class TDQN:
 
         # EXPLOITATION -> RL policy
         if(random.random() > self.epsilonValue(self.iterations)):
-            # Sticky action (RL generalization mechanism)
-            if(random.random() > alpha):
-                action, Q, QValues = self.chooseAction(state)
-            else:
-                action = previousAction
-                Q = 0
-                QValues = [0, 0]
+            action, Q, QValues = self.chooseAction(state)
 
         # EXPLORATION -> Random
         else:
+            # action = np.random.choice([-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10])
             action = random.randrange(self.actionSpace)
             Q = 0
-            QValues = [0, 0]
-        
+            QValues = [0 for i in range(self.actionSpace)]
+
         # Increment the iterations counter (for Epsilon Greedy)
         self.iterations += 1
 
         return action, Q, QValues
-    
+
 
     def learning(self, batchSize=batchSize):
         """
         GOAL: Sample a batch of past experiences and learn from it
               by updating the Reinforcement Learning policy.
-        
+
         INPUTS: batchSize: Size of the batch to sample from the replay memory.
-        
+
         OUTPUTS: /
         """
-        
+
         # Check that the replay memory is filled enough
         if (len(self.replayMemory) >= batchSize):
 
@@ -520,6 +511,7 @@ class TDQN:
             done = torch.tensor(done, dtype=torch.float, device=self.device)
 
             # Compute the current Q values returned by the policy network
+
             currentQValues = self.policyNetwork(state).gather(1, action.unsqueeze(1)).squeeze(1)
 
             # Compute the next Q values returned by the target network
@@ -548,21 +540,21 @@ class TDQN:
             self.policyNetwork.eval()
 
 
-    def training(self, trainingEnv, name="", trainingParameters=[], verbose=False, 
+    def training(self, trainingEnv, name="", trainingParameters=[], verbose=False,
                 rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the RL trading agent by interacting with its trading environment.
-        
+
         INPUTS: - trainingEnv: Training RL environment (known).
                 - trainingParameters: Additional parameters associated
                                       with the training phase (e.g. the number
-                                      of episodes).  
+                                      of episodes).
                 - verbose: Enable the printing of a training feedback.
                 - rendering: Enable the training environment rendering.
                 - plotTraining: Enable the plotting of the training results.
                 - showPerformance: Enable the printing of a table summarizing
                                    the trading strategy performance.
-        
+
         OUTPUTS: - trainingEnv: Training RL environment.
         """
 
@@ -599,7 +591,7 @@ class TDQN:
 
                 # For each episode, train on the entire set of training environments
                 for i in range(len(trainingEnvList)):
-                    
+
                     # Set the initial RL variables
                     coefficients = self.getNormalizationCoefficients(trainingEnvList[i])
                     trainingEnvList[i].reset()
@@ -618,21 +610,21 @@ class TDQN:
 
                         # Choose an action according to the RL policy and the current RL state
                         action, _, _ = self.chooseActionEpsilonGreedy(state, previousAction)
-                        
+
                         # Interact with the environment with the chosen action
                         nextState, reward, done, info = trainingEnvList[i].step(action)
-                        
+
                         # Process the RL variables retrieved and insert this new experience into the Experience Replay memory
                         reward = self.processReward(reward)
                         nextState = self.processState(nextState, coefficients)
                         self.replayMemory.push(state, action, reward, nextState, done)
 
-                        # Trick for better exploration
-                        otherAction = int(not bool(action))
-                        otherReward = self.processReward(info['Reward'])
-                        otherNextState = self.processState(info['State'], coefficients)
-                        otherDone = info['Done']
-                        self.replayMemory.push(state, otherAction, otherReward, otherNextState, otherDone)
+                        # # Trick for better exploration
+                        # otherAction = int(not bool(action))
+                        # otherReward = self.processReward(info['Reward'])
+                        # otherNextState = self.processState(info['State'], coefficients)
+                        # otherDone = info['Done']
+                        # self.replayMemory.push(state, otherAction, otherReward, otherNextState, otherDone)
 
                         # Execute the DQN learning procedure
                         stepsCounter += 1
@@ -647,11 +639,11 @@ class TDQN:
                         # Continuous tracking of the training performance
                         if plotTraining:
                             totalReward += reward
-                    
+
                     # Store the current training results
                     if plotTraining:
                         score[i][episode] = totalReward
-                
+
                 # Compute the current performance on both the training and testing sets
                 if plotTraining:
                     # Training set performance
@@ -661,7 +653,7 @@ class TDQN:
                     performanceTrain.append(performance)
                     self.writer.add_scalar('Training performance (Sharpe Ratio)', performance, episode)
                     trainingEnv.reset()
-        
+
         except KeyboardInterrupt:
             print()
             print("WARNING: Training prematurely interrupted...")
@@ -689,10 +681,10 @@ class TDQN:
         if showPerformance:
             analyser = PerformanceEstimator(trainingEnv.data)
             analyser.displayPerformance('TDQN')
-        
+
         # Closing of the tensorboard writer
         self.writer.close()
-        
+
         return trainingEnv
 
 
@@ -700,13 +692,13 @@ class TDQN:
         """
         GOAL: Test the RL agent trading policy on a new trading environment
               in order to assess the trading strategy performance.
-        
+
         INPUTS: - trainingEnv: Training RL environment (known).
                 - testingEnv: Unknown trading RL environment.
                 - rendering: Enable the trading environment rendering.
                 - showPerformance: Enable the printing of a table summarizing
                                    the trading strategy performance.
-        
+
         OUTPUTS: - testingEnv: Trading environment backtested.
         """
 
@@ -728,22 +720,23 @@ class TDQN:
 
             # Choose an action according to the RL policy and the current RL state
             action, _, QValues = self.chooseAction(state)
-                
+
             # Interact with the environment with the chosen action
             nextState, _, done, _ = testingEnvSmoothed.step(action)
             testingEnv.step(action)
-                
+
             # Update the new state
             state = self.processState(nextState, coefficients)
 
-            # Storing of the Q values
-            QValues0.append(QValues[0])
-            QValues1.append(QValues[1])
+            # # Storing of the Q values
+            # QValues0.append(QValues[0])
+            # QValues1.append(QValues[1])
+
 
         # If required, show the rendering of the trading environment
         if rendering:
             testingEnv.render()
-            self.plotQValues(QValues0, QValues1, name)
+            self.plotQValues(QValues, name)
 
         # If required, print the strategy performance in a table
         if showPerformance:
@@ -757,10 +750,10 @@ class TDQN:
         """
         GOAL: Plot the training phase results
               (score, sum of rewards).
-        
+
         INPUTS: - score: Array of total episode rewards.
                 - marketSymbol: Stock market trading symbol.
-        
+
         OUTPUTS: /
         """
 
@@ -769,32 +762,32 @@ class TDQN:
         ax1.plot(score)
         plt.savefig(os.path.join('Figures', name+"_Results.png"))
 
-    
-    def plotQValues(self, QValues0, QValues1, name=""):
+
+    def plotQValues(self, QValues, name=""):
         """
         Plot sequentially the Q values related to both actions.
-        
+
         :param: - QValues0: Array of Q values linked to action 0.
                 - QValues1: Array of Q values linked to action 1.
                 - marketSymbol: Stock market trading symbol.
-        
+
         :return: /
         """
 
         fig = plt.figure()
         ax1 = fig.add_subplot(111, ylabel='Q values', xlabel='Time')
-        ax1.plot(QValues0)
-        ax1.plot(QValues1)
+        ax1.plot(QValues[0])
+        ax1.plot(QValues[-1])
         ax1.legend(['Short', 'Long'])
         plt.savefig(os.path.join('Figures', name+"_Qvalues.png"))
 
-        
+
     def saveModel(self, fileName):
         """
         GOAL: Save the RL policy, which is the policy Deep Neural Network.
-        
+
         INPUTS: - fileName: Name of the file.
-        
+
         OUTPUTS: /
         """
 
@@ -804,9 +797,9 @@ class TDQN:
     def loadModel(self, fileName):
         """
         GOAL: Load a RL policy, which is the policy Deep Neural Network.
-        
+
         INPUTS: - fileName: Name of the file.
-        
+
         OUTPUTS: /
         """
 

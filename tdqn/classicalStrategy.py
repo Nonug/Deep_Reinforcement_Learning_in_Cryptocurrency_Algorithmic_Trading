@@ -29,9 +29,9 @@ from tradingPerformance import PerformanceEstimator
 class tradingStrategy(ABC):
     """
     GOAL: Define the abstract class representing a classical trading strategy.
-        
+
     VARIABLES: /
-          
+
     METHODS: - chooseAction: Make a decision regarding the next trading
                              position (long=1 and short=0).
              - training: Train the trading strategy on a known trading
@@ -47,14 +47,14 @@ class tradingStrategy(ABC):
         """
         GOAL: Make a decision regarding the next trading position
               (long=1 and short=0).
-        
-        INPUTS: - state: State of the trading environment.      
-        
+
+        INPUTS: - state: State of the trading environment.
+
         OUTPUTS: - action: Trading position decision (long=1 and short=0).
         """
 
         pass
-    
+
 
     @abstractmethod
     def training(self, trainingEnv, name="", trainingParameters=[],
@@ -63,16 +63,16 @@ class tradingStrategy(ABC):
         GOAL: Train the trading strategy on a known trading environment
               (called training set) in order to tune the trading strategy
               parameters.
-        
+
         INPUTS: - trainingEnv: Known trading environment (training set).
                 - trainingParameters: Additional parameters associated
-                                      with the training phase.   
+                                      with the training phase.
                 - verbose: Enable the printing of a training feedback.
                 - rendering: Enable the trading environment rendering.
                 - plotTraining: Enable the plotting of the training results.
                 - showPerformance: Enable the printing of a table summarizing
                                    the trading strategy performance.
-        
+
         OUTPUTS: - trainingEnv: Trading environment associated with the best
                                 trading strategy parameters backtested.
         """
@@ -86,13 +86,13 @@ class tradingStrategy(ABC):
         GOAL: Test the trading strategy on another unknown trading
               environment (called testing set) in order to evaluate
               the trading strategy performance.
-        
+
         INPUTS: - testingEnv: Unknown trading environment (testing set).
                 - trainingEnv: Known trading environment (training set).
                 - rendering: Enable the trading environment rendering.
                 - showPerformance: Enable the printing of a table summarizing
                                    the trading strategy performance.
-        
+
         OUTPUTS: - testingEnv: Trading environment backtested.
         """
 
@@ -107,9 +107,9 @@ class tradingStrategy(ABC):
 class BuyAndHold(tradingStrategy):
     """
     GOAL: Implement a simple "Buy and Hold" trading strategy.
-        
+
     VARIABLES: /
-          
+
     METHODS: - chooseAction: Always make the long trading position decision
                              (return 1).
              - training: Train the trading strategy on a known trading
@@ -126,15 +126,16 @@ class BuyAndHold(tradingStrategy):
     def chooseAction(self, state):
         """
         GOAL: Always make the long trading position decision.
-        
-        INPUTS: - state: State of the trading environment.      
-        
+
+        INPUTS: - state: State of the trading environment.
+
         OUTPUTS: - action: Trading position decision (always long -> 1).
         """
 
         # Trading position decision -> always long
-        return 1
-    
+        # if state[-1][-1] == 0 else 5
+        return 10
+
 
     def training(self, trainingEnv, name="", trainingParameters=[],
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
@@ -144,11 +145,11 @@ class BuyAndHold(tradingStrategy):
               parameters. However, there is no training required for a
               simple Buy and Hold strategy because the strategy does not
               involve any tunable parameter.
-        
+
         INPUTS: - trainingEnv: Known trading environment (training set).
                 - trainingParameters: Additional parameters associated
                                       with the training phase. None for
-                                      the Buy and Hold strategy.  
+                                      the Buy and Hold strategy.
                 - verbose: Enable the printing of a training feedback. None
                            for the Buy and Hold strategy.
                 - rendering: Enable the trading environment rendering.
@@ -156,7 +157,7 @@ class BuyAndHold(tradingStrategy):
                                 None for the Buy and Hold strategy.
                 - showPerformance: Enable the printing of a table summarizing
                                    the trading strategy performance.
-        
+
         OUTPUTS: - trainingEnv: Trading environment backtested.
         """
 
@@ -169,11 +170,11 @@ class BuyAndHold(tradingStrategy):
         # If required, print a feedback about the training
         if verbose:
             print("No training is required as the simple Buy and Hold trading strategy does not involve any tunable parameters.")
-        
+
         # If required, render the trading environment backtested
         if rendering:
             trainingEnv.render()
-        
+
         # If required, plot the training results
         if plotTraining:
             print("No training results are available as the simple Buy and Hold trading strategy does not involve any tunable parameters.")
@@ -192,13 +193,13 @@ class BuyAndHold(tradingStrategy):
         GOAL: Test the trading strategy on another unknown trading
               environment (called testing set) in order to evaluate
               the trading strategy performance.
-        
+
         INPUTS: - testingEnv: Unknown trading environment (testing set).
                 - trainingEnv: Known trading environment (training set).
                 - rendering: Enable the trading environment rendering.
                 - showPerformance: Enable the printing of a table summarizing
                                    the trading strategy performance.
-        
+
         OUTPUTS: - testingEnv: Trading environment backtested.
         """
 
@@ -229,9 +230,9 @@ class BuyAndHold(tradingStrategy):
 class SellAndHold(tradingStrategy):
     """
     GOAL: Implement a simple "Sell and Hold" trading strategy.
-        
+
     VARIABLES: /
-          
+
     METHODS: - chooseAction: Always make the short trading position decision
                              (return 0).
              - training: Train the trading strategy on a known trading
@@ -248,15 +249,15 @@ class SellAndHold(tradingStrategy):
     def chooseAction(self, state):
         """
         GOAL: Always make the short trading position decision.
-        
-        INPUTS: - state: State of the trading environment.      
-        
+
+        INPUTS: - state: State of the trading environment.
+
         OUTPUTS: - action: Trading position decision (always short -> 0).
         """
 
         # Trading position decision -> always short
-        return 0
-    
+        return 0 if state[-1][-1] == 0 else 5
+
 
     def training(self, trainingEnv, name="", trainingParameters=[],
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
@@ -266,11 +267,11 @@ class SellAndHold(tradingStrategy):
               parameters. However, there is no training required for a
               simple Sell and Hold strategy because the strategy does not
               involve any tunable parameter.
-        
+
         INPUTS: - trainingEnv: Known trading environment (training set).
                 - trainingParameters: Additional parameters associated
                                       with the training phase. None for
-                                      the Sell and Hold strategy.  
+                                      the Sell and Hold strategy.
                 - verbose: Enable the printing of a training feedback. None
                            for the Sell and Hold strategy.
                 - rendering: Enable the trading environment rendering.
@@ -278,7 +279,7 @@ class SellAndHold(tradingStrategy):
                                 None for the Sell and Hold strategy.
                 - showPerformance: Enable the printing of a table summarizing
                                    the trading strategy performance.
-        
+
         OUTPUTS: - trainingEnv: Trading environment backtested.
         """
 
@@ -291,11 +292,11 @@ class SellAndHold(tradingStrategy):
         # If required, print a feedback about the training
         if verbose:
             print("No training is required as the simple Sell and Hold trading strategy does not involve any tunable parameters.")
-        
+
         # If required, render the trading environment backtested
         if rendering:
             trainingEnv.render()
-        
+
         # If required, plot the training results
         if plotTraining:
             print("No training results are available as the simple Sell and Hold trading strategy does not involve any tunable parameters.")
@@ -314,13 +315,13 @@ class SellAndHold(tradingStrategy):
         GOAL: Test the trading strategy on another unknown trading
               environment (called testing set) in order to evaluate
               the trading strategy performance.
-        
+
         INPUTS: - testingEnv: Unknown trading environment (testing set).
                 - trainingEnv: Known trading environment (training set).
                 - rendering: Enable the trading environment rendering.
                 - showPerformance: Enable the printing of a table summarizing
                                    the trading strategy performance.
-        
+
         OUTPUTS: - testingEnv: Trading environment backtested.
         """
 
@@ -351,14 +352,14 @@ class SellAndHold(tradingStrategy):
 class MovingAveragesTF(tradingStrategy):
     """
     GOAL: Implement a Trend Following trading strategy based on moving averages.
-        
+
     VARIABLES: - parameters: Trading strategy parameters, which are the windows
                              durations of the moving averages.
-          
+
     METHODS: - __init__: Object constructor initializing the strategy parameters.
              - setParameters: Set new values for the parameters of the trading
                               strategy, which are the two windows durations.
-             - processState: Process the trading environment state to obtain 
+             - processState: Process the trading environment state to obtain
                              the required format.
              - chooseAction: Make a decision regarding the next trading
                              position (long=1 and short=0).
@@ -373,10 +374,10 @@ class MovingAveragesTF(tradingStrategy):
     def __init__(self, parameters=[5, 10]):
         """
         GOAL: Object constructor initializing the strategy parameters.
-        
+
         INPUTS: - parameters: Trading strategy parameters, which are the windows
-                              durations of the moving averages. 
-        
+                              durations of the moving averages.
+
         OUTPUTS: /
         """
 
@@ -385,23 +386,23 @@ class MovingAveragesTF(tradingStrategy):
 
     def setParameters(self, parameters):
         """
-        GOAL: Set new values for the parameters of the trading strategy, 
+        GOAL: Set new values for the parameters of the trading strategy,
               which are the two windows durations.
-        
-        INPUTS: - parameters: List of new parameters to set.      
-        
+
+        INPUTS: - parameters: List of new parameters to set.
+
         OUTPUTS: /
         """
 
         self.parameters = parameters
 
-    
+
     def processState(self, state):
         """
         GOAL: Process the trading environment state to obtain the required format.
-        
+
         INPUTS: - state: State of the trading environment.
-        
+
         OUTPUTS: - state: State of the trading environment in the required format.
         """
 
@@ -412,9 +413,9 @@ class MovingAveragesTF(tradingStrategy):
         """
         GOAL: Make a decision regarding the next trading position
               (long=1 and short=0) based on the moving averages.
-        
-        INPUTS: - state: State of the trading environment.      
-        
+
+        INPUTS: - state: State of the trading environment.
+
         OUTPUTS: - action: Trading position decision (long=1 and short=0).
         """
 
@@ -432,24 +433,24 @@ class MovingAveragesTF(tradingStrategy):
         else:
             # Short position
             return 0
-    
 
-    def training(self, trainingEnv, name="", trainingParameters=[], 
+
+    def training(self, trainingEnv, name="", trainingParameters=[],
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
         """
         GOAL: Train the trading strategy on a known trading environment
               (called training set) in order to tune the trading strategy
               parameters, by simulating many combinations of parameters.
-        
+
         INPUTS: - trainingEnv: Known trading environment (training set).
                 - trainingParameters: Additional parameters associated
-                                      with the training phase simulations.   
+                                      with the training phase simulations.
                 - verbose: Enable the printing of a training feedback.
                 - rendering: Enable the trading environment rendering.
                 - plotTraining: Enable the plotting of the training results.
                 - showPerformance: Enable the printing of a table summarizing
                                    the trading strategy performance.
-        
+
         OUTPUTS: - trainingEnv: Trading environment associated with the best
                                 trading strategy parameters backtested.
         """
@@ -485,7 +486,7 @@ class MovingAveragesTF(tradingStrategy):
                 if(shorter < longer):
 
                     # If required, print the progression of the training
-                    if(verbose):       
+                    if(verbose):
                         print("".join(["Training progression: ", str(count), "/", str(length)]), end='\r', flush=True)
 
                     # Apply the trading strategy with the current combination of parameters
@@ -504,7 +505,7 @@ class MovingAveragesTF(tradingStrategy):
                         bestShort = shorter
                         bestLong = longer
                         bestPerformance = performance
-                    
+
                     # Reset of the trading environment
                     trainingEnv.reset()
                     count += 1
@@ -523,7 +524,7 @@ class MovingAveragesTF(tradingStrategy):
         # If required, render the trading environment backtested
         if rendering:
             trainingEnv.render()
-        
+
         # If required, plot the training results
         if plotTraining:
             self.plotTraining(results, bounds, step, trainingEnv.marketSymbol)
@@ -542,13 +543,13 @@ class MovingAveragesTF(tradingStrategy):
         GOAL: Test the trading strategy on another unknown trading
               environment (called testing set) in order to evaluate
               the trading strategy performance.
-        
+
         INPUTS: - testingEnv: Unknown trading environment (testing set).
                 - trainingEnv: Known trading environment (training set).
                 - rendering: Enable the trading environment rendering.
                 - showPerformance: Enable the printing of a table summarizing
                                    the trading strategy performance.
-        
+
         OUTPUTS: - testingEnv: Trading environment backtested.
         """
 
@@ -615,7 +616,7 @@ class MovingAveragesTF(tradingStrategy):
         plt.gca().invert_yaxis()
         plt.savefig(''.join(['Figures/', str(marketSymbol), '_MATFOptimization2D', '.png']))
         #plt.show()
-    
+
 
 
 ###############################################################################
@@ -625,14 +626,14 @@ class MovingAveragesTF(tradingStrategy):
 class MovingAveragesMR(tradingStrategy):
     """
     GOAL: Implement a Mean Reversion trading strategy based on moving averages.
-        
+
     VARIABLES: - parameters: Trading strategy parameters, which are the windows
                              durations of the moving averages.
-          
+
     METHODS: - __init__: Object constructor initializing the strategy parameters.
              - setParameters: Set new values for the parameters of the trading
                               strategy, which are the two windows durations.
-             - processState: Process the trading environment state to obtain 
+             - processState: Process the trading environment state to obtain
                              the required format.
              - chooseAction: Make a decision regarding the next trading
                              position (long=1 and short=0).
@@ -646,11 +647,11 @@ class MovingAveragesMR(tradingStrategy):
 
     def __init__(self, parameters=[5, 10]):
         """
-        GOAL: Object constructor initializing the strategy parameters. 
-        
+        GOAL: Object constructor initializing the strategy parameters.
+
         INPUTS: - parameters: Trading strategy parameters, which are the windows
-                              durations of the moving averages.    
-        
+                              durations of the moving averages.
+
         OUTPUTS: /
         """
 
@@ -659,23 +660,23 @@ class MovingAveragesMR(tradingStrategy):
 
     def setParameters(self, parameters):
         """
-        GOAL: Set new values for the parameters of the trading strategy, 
+        GOAL: Set new values for the parameters of the trading strategy,
               which are the two windows durations.
-        
-        INPUTS: - parameters: List of new parameters to set.      
-        
+
+        INPUTS: - parameters: List of new parameters to set.
+
         OUTPUTS: /
         """
 
         self.parameters = parameters
 
-    
+
     def processState(self, state):
         """
         GOAL: Process the trading environment state to obtain the required format.
-        
+
         INPUTS: - state: State of the trading environment.
-        
+
         OUTPUTS: - state: State of the trading environment in the required format.
         """
 
@@ -686,9 +687,9 @@ class MovingAveragesMR(tradingStrategy):
         """
         GOAL: Make a decision regarding the next trading position
               (long=1 and short=0) based on the moving averages.
-        
-        INPUTS: - state: State of the trading environment.      
-        
+
+        INPUTS: - state: State of the trading environment.
+
         OUTPUTS: - action: Trading position decision (long=1 and short=0).
         """
 
@@ -706,7 +707,7 @@ class MovingAveragesMR(tradingStrategy):
         else:
             # Short position
             return 0
-    
+
 
     def training(self, trainingEnv, name="", trainingParameters=[],
                  verbose=False, rendering=False, plotTraining=False, showPerformance=False):
@@ -714,16 +715,16 @@ class MovingAveragesMR(tradingStrategy):
         GOAL: Train the trading strategy on a known trading environment
               (called training set) in order to tune the trading strategy
               parameters, by simulating many combinations of parameters.
-        
+
         INPUTS: - trainingEnv: Known trading environment (training set).
                 - trainingParameters: Additional parameters associated
-                                      with the training phase simulations.   
+                                      with the training phase simulations.
                 - verbose: Enable the printing of a training feedback.
                 - rendering: Enable the trading environment rendering.
                 - plotTraining: Enable the plotting of the training results.
                 - showPerformance: Enable the printing of a table summarizing
                                    the trading strategy performance.
-        
+
         OUTPUTS: - trainingEnv: Trading environment associated with the best
                                 trading strategy parameters backtested.
         """
@@ -759,7 +760,7 @@ class MovingAveragesMR(tradingStrategy):
                 if(shorter < longer):
 
                     # If required, print the progression of the training
-                    if(verbose):       
+                    if(verbose):
                         print("".join(["Training progression: ", str(count), "/", str(length)]), end='\r', flush=True)
 
                     # Apply the trading strategy with the current combination of parameters
@@ -778,7 +779,7 @@ class MovingAveragesMR(tradingStrategy):
                         bestShort = shorter
                         bestLong = longer
                         bestPerformance = performance
-                    
+
                     # Reset of the trading environment
                     trainingEnv.reset()
                     count += 1
@@ -797,7 +798,7 @@ class MovingAveragesMR(tradingStrategy):
         # If required, render the trading environment backtested
         if rendering:
             trainingEnv.render()
-        
+
         # If required, plot the training results
         if plotTraining:
             self.plotTraining(results, bounds, step, trainingEnv.marketSymbol)
@@ -816,13 +817,13 @@ class MovingAveragesMR(tradingStrategy):
         GOAL: Test the trading strategy on another unknown trading
               environment (called testing set) in order to evaluate
               the trading strategy performance.
-        
+
         INPUTS: - testingEnv: Unknown trading environment (testing set).
                 - trainingEnv: Known trading environment (training set).
                 - rendering: Enable the trading environment rendering.
                 - showPerformance: Enable the printing of a table summarizing
                                    the trading strategy performance.
-        
+
         OUTPUTS: - testingEnv: Trading environment backtested.
         """
 

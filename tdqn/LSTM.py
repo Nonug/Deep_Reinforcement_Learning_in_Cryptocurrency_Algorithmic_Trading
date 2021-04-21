@@ -45,10 +45,6 @@ class LSTM(nn.Module):
     def forward(self, x):
         x = x[:, :-1]
         x = x.reshape([x.shape[0], self.sequence_length, self.input_size])
-
-        # Set initial hidden states and cell states for LSTM)
-        # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        # x: (batch_size, sequence_length, input_size), h0: (num_layers, n, hidden_size)
         
         # Forward propagate RNN
         # x: (batch_size, input_size, hidden_size)
@@ -69,9 +65,7 @@ class LSTM(nn.Module):
         
         # Decode the hidden state of the last time step
         x = x[:, -1, :]
-        # x: (batch_size, hidden_size)
          
         x = self.fc(x)
-        # x: (batch_size, output_size)
         return x
   

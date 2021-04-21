@@ -53,10 +53,8 @@ class ConvDuelingDQN(nn.Module):
         x = self.relu(self.conv3(x))
         x = x.view(x.size(0), -1)
 
-        adv = self.relu(self.bn1(self.fc1_adv(x)))
-        val = self.relu(self.bn1(self.fc1_val(x)))
-        adv = self.dropout1(adv)
-        val = self.dropout1(val)
+        adv = self.dropout1(self.relu(self.bn1(self.fc1_adv(x))))
+        val = self.dropout1(self.relu(self.bn1(self.fc1_val(x))))
 
         adv = self.fc2_adv(adv)
         val = self.fc2_val(val).expand(x.size(0), self.num_actions)
