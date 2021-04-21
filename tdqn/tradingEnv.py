@@ -33,10 +33,12 @@ class TradingEnv(gym.Env):
         # Set the trading activity dataframe
         self.data['Position'] = 0
         self.data['Action'] = 0
+        self.data['ActionType'] = 0
         self.data['Holdings'] = 0.
         self.data['Cash'] = float(money)
         self.data['Money'] = self.data['Holdings'] + self.data['Cash']
         self.data['Returns'] = 0.
+        self.data['AssetPct'] = 0. # AssetPct%: % of net value in asset
 
         # Set the RL variables common to every OpenAI gym environments
         self.state = [self.data['Close'][0:stateLength].tolist(),
@@ -44,6 +46,7 @@ class TradingEnv(gym.Env):
                       self.data['High'][0:stateLength].tolist(),
                       self.data['Volume'][0:stateLength].tolist(),
                       self.data['s2f'][0:stateLength].tolist(),  # reduce state
+                      self.data['AssetPct'][0:stateLength].tolist(),
                       [0]]
         self.reward = 0.
         self.rewardMode = rewardMode
@@ -71,10 +74,12 @@ class TradingEnv(gym.Env):
         # Reset the trading activity dataframe
         self.data['Position'] = 0
         self.data['Action'] = 0
+        self.data['ActionType'] = 0
         self.data['Holdings'] = 0.
         self.data['Cash'] = self.data['Cash'][0]
         self.data['Money'] = self.data['Holdings'] + self.data['Cash']
         self.data['Returns'] = 0.
+        self.data['AssetPct'] = 0.
         self.data
 
         # Reset the RL variables common to every OpenAI gym environments
@@ -83,6 +88,7 @@ class TradingEnv(gym.Env):
                       self.data['High'][0:self.stateLength].tolist(),
                       self.data['Volume'][0:self.stateLength].tolist(),
                       self.data['s2f'][0:self.stateLength].tolist(),  # reduce state
+                      self.data['AssetPct'][0:self.stateLength].tolist(),
                       [0]]
         self.reward = 0.
         self.done = 0
@@ -96,8 +102,11 @@ class TradingEnv(gym.Env):
 
     def computeLowerBound(self, cash, numberOfShares, price):
         # GOAL: Compute the lower bound of the complete RL action space, i.e. the minimum number of share to trade.
+        # Epsilon: Max. tolerable upward volatility before closing a short trade
 
         # Computation of the RL action lower bound
+        # numberOfShares * price = holdings owed (negative)
+        # Ensure (- holdings owed - cash) > 0
         deltaValues = - cash - numberOfShares * price * (1 + self.epsilon) * (1 + self.transactionCosts)
         if deltaValues < 0:
             lowerBound = deltaValues / (price * (2 * self.transactionCosts + (self.epsilon * (1 + self.transactionCosts))))
@@ -201,15 +210,19 @@ class TradingEnv(gym.Env):
         if actionType not in [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]:
             raise SystemExit(f"Prohibited action! Action (given {actionType}) not correct.")
 
+        self.data['ActionType'][t] = actionType
+
         # CASE 1: Buy Action
         if (actionType > 0):
             if(self.data['Position'][t - 1] == -1):
-                newShares = abs(round(numberOfShares * amount, 3)) # recover % of the short position
+                newShares = abs(numberOfShares * amount)  # recover % of the short position
             else:
                 maxShareAmount = self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts))
-                newShares = abs(round(maxShareAmount * amount, 3))
+                newShares = abs(maxShareAmount * amount)
+            # maxShareAmount = self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts))
+            # newShares = abs(maxShareAmount * amount)
 
-            if newShares == 0:  # Nullify trades with size < 0.005
+            if round(newShares,3) == 0:  # Nullify trades with size < 0.005
                 # actionType = 0
                 self.data['Action'][t] = 0
                 self.data['Cash'][t] = self.data['Cash'][t - 1]
@@ -222,15 +235,31 @@ class TradingEnv(gym.Env):
 
         # CASE 2: Sell Action
         elif (actionType < 0):
-            if (self.data['Position'][t - 1] == 1):
-                newShares = abs(round(numberOfShares * amount, 3)) # recover % of the long position
-            elif (self.data['Position'][t - 1] == -1):
+            # if (self.data['Position'][t - 1] == 1):
+            #     newShares = abs(round(numberOfShares * amount, 3)) # recover % of the long position
+            # elif (self.data['Position'][t - 1] == -1):
+            #     newShares = 0
+            # else:
+            #     maxShareAmount = self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts))
+            #     newShares = abs(round(maxShareAmount * amount, 3))
+
+            if (self.data['Position'][t - 1] == -1):
+                # lowerBound = self.computeLowerBound(self.data['Cash'][t - 1], numberOfShares, self.data['Close'][t-1])
+                # if lowerBound <= 0: # do nothing
+                #     self.data['Cash'][t] = self.data['Cash'][t - 1]
+                #     self.data['Holdings'][t] = - self.numberOfShares * self.data['Close'][t]
+                # else: # Buy back
+                #     numberOfSharesToBuy = min(math.floor(lowerBound), self.numberOfShares)
+                #     self.numberOfShares += numberOfSharesToBuy
+                #     self.data['Cash'][t] = self.data['Cash'][t - 1] - numberOfSharesToBuy * self.data['Close'][t] * (1 + self.transactionCosts)
+                #     self.data['Holdings'][t] = - self.numberOfShares * self.data['Close'][t]
+                #     customReward = True
                 newShares = 0
             else:
                 maxShareAmount = self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts))
-                newShares = abs(round(maxShareAmount * amount, 3))
+                newShares = abs(maxShareAmount * amount)
 
-            if newShares == 0:  # Nullify trades with size < 0.005
+            if round(newShares,3) == 0:  # Nullify trades with size < 0.005
                 # actionType = 0
                 self.data['Action'][t] = 0
                 self.data['Cash'][t] = self.data['Cash'][t - 1]
@@ -263,6 +292,7 @@ class TradingEnv(gym.Env):
 
         # Update the total amount of money owned by the agent, as well as the return generated
         self.data['Money'][t] = self.data['Holdings'][t] + self.data['Cash'][t]
+        self.data['AssetPct'][t] = self.data['Holdings'][t] / self.data['Money'][t]
         self.data['Returns'][t] = (self.data['Money'][t] - self.data['Money'][t-1])/self.data['Money'][t-1]
 
         # self.data['Action'][t] = actionType
@@ -280,6 +310,7 @@ class TradingEnv(gym.Env):
                       self.data['High'][self.t - self.stateLength : self.t].tolist(),
                       self.data['Volume'][self.t - self.stateLength : self.t].tolist(),
                       self.data['s2f'][self.t - self.stateLength : self.t].tolist(), # reduce state
+                      self.data['AssetPct'][self.t - self.stateLength : self.t].tolist(),
                       [self.data['Position'][self.t - 1]]]
         if(self.t == self.data.shape[0]):
             self.done = 1

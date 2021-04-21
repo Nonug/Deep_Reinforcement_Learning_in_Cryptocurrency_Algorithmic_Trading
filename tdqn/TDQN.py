@@ -332,7 +332,9 @@ class TDQN:
         # 5. s2f # reduce state
         coeffs = (np.min(s2f)/margin, np.max(s2f)*margin)
         coefficients.append(coeffs)
-
+        # 6. AssetPct => no normalization required
+        coeffs = (0, 1)
+        coefficients.append(coeffs)
         return coefficients
 
 
@@ -352,6 +354,7 @@ class TDQN:
         highPrices = [state[2][i] for i in range(len(state[2]))]
         volumes = [state[3][i] for i in range(len(state[3]))]
         s2f = [state[4][i] for i in range(len(state[4]))] # reduce state
+        assetPct = [state[5][i] for i in range(len(state[5]))]
 
         # 1. Close price => returns => MinMax normalization
         returns = [(closePrices[i]-closePrices[i-1])/closePrices[i-1] for i in range(1, len(closePrices))]
@@ -391,6 +394,9 @@ class TDQN:
         else:
             state[4] = [0 for x in s2f]
 
+        # 6. AssetPct => no normalization required
+        assetPct = [assetPct[i] for i in range(1, len(assetPct))]
+        state[5] = assetPct
         # Process the state structure to obtain the appropriate format
         state = [item for sublist in state for item in sublist]
 
@@ -473,7 +479,7 @@ class TDQN:
             if(random.random() > alpha):
                 action, Q, QValues = self.chooseAction(state)
             else:
-                action = previousAction
+                action = 5 # 5th element = 0
                 Q = 0
                 QValues = [0 for i in range(self.actionSpace)]
 
