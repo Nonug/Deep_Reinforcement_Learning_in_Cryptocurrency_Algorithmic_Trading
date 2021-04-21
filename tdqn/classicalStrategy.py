@@ -134,7 +134,7 @@ class BuyAndHold(tradingStrategy):
 
         # Trading position decision -> always long
         # if state[-1][-1] == 0 else 5
-        return 10
+        return 10 if state[-1][-1] == 0 else 5
 
 
     def training(self, trainingEnv, name="", trainingParameters=[],
