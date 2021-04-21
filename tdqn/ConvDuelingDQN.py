@@ -75,6 +75,7 @@ class ConvDuelingDQN(nn.Module):
         self.fc1_val = nn.Linear(in_features=h*w*128, out_features=512)
 
         self.dropout1 = nn.Dropout(dropout)
+        self.bn1 = nn.BatchNorm1d(512)
 
         self.fc2_adv = nn.Linear(in_features=512, out_features=num_actions)
         self.fc2_val = nn.Linear(in_features=512, out_features=1)
@@ -97,8 +98,8 @@ class ConvDuelingDQN(nn.Module):
         x = self.relu(self.conv3(x))
         x = x.view(x.size(0), -1)
 
-        adv = self.relu(self.fc1_adv(x))
-        val = self.relu(self.fc1_val(x))
+        adv = self.relu(self.bn1(self.fc1_adv(x)))
+        val = self.relu(self.bn1(self.fc1_val(x)))
         adv = self.dropout1(adv)
         val = self.dropout1(val)
 
