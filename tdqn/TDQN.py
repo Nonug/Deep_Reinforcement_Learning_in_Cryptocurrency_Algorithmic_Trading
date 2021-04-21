@@ -469,7 +469,13 @@ class TDQN:
 
         # EXPLOITATION -> RL policy
         if(random.random() > self.epsilonValue(self.iterations)):
-            action, Q, QValues = self.chooseAction(state)
+            # Sticky action (RL generalization mechanism)
+            if(random.random() > alpha):
+                action, Q, QValues = self.chooseAction(state)
+            else:
+                action = previousAction
+                Q = 0
+                QValues = [0 for i in range(self.actionSpace)]
 
         # EXPLORATION -> Random
         else:

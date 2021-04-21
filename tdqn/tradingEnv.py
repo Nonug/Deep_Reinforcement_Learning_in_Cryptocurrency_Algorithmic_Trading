@@ -204,10 +204,10 @@ class TradingEnv(gym.Env):
         # CASE 1: Buy Action
         if (actionType > 0):
             if(self.data['Position'][t - 1] == -1):
-                newShares = round(numberOfShares * amount, 3) # recover % of the short position
+                newShares = abs(round(numberOfShares * amount, 3)) # recover % of the short position
             else:
                 maxShareAmount = self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts))
-                newShares = round(maxShareAmount * amount, 3)
+                newShares = abs(round(maxShareAmount * amount, 3))
 
             if newShares == 0:  # Nullify trades with size < 0.005
                 # actionType = 0
@@ -223,12 +223,12 @@ class TradingEnv(gym.Env):
         # CASE 2: Sell Action
         elif (actionType < 0):
             if (self.data['Position'][t - 1] == 1):
-                newShares = round(numberOfShares * amount, 3) # recover % of the long position
+                newShares = abs(round(numberOfShares * amount, 3)) # recover % of the long position
             elif (self.data['Position'][t - 1] == -1):
                 newShares = 0
             else:
                 maxShareAmount = self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts))
-                newShares = round(maxShareAmount * amount, 3)
+                newShares = abs(round(maxShareAmount * amount, 3))
 
             if newShares == 0:  # Nullify trades with size < 0.005
                 # actionType = 0
