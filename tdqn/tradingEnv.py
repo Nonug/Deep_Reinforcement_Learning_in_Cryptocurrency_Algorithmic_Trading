@@ -101,6 +101,15 @@ class TradingEnv(gym.Env):
             lowerBound = deltaValues / (price * self.epsilon * (1 + self.transactionCosts))
         return lowerBound
 
+    def rounding(self, shares):
+        """
+        GOAL: Rounds down the given number of shares to the nearest 0.01.
+
+        INPUTS: - shares to be rounded
+
+        OUTPUTS: rounded share
+        """
+        return math.floor(shares * 100) / 100
 
     def step(self, action):
         """
@@ -129,14 +138,14 @@ class TradingEnv(gym.Env):
                 self.data['Holdings'][t] = self.numberOfShares * self.data['Close'][t]
             # Case b: No position -> Long
             elif(self.data['Position'][t - 1] == 0):
-                self.numberOfShares = math.floor(self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts)))
+                self.numberOfShares = self.rounding(self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts)))
                 self.data['Cash'][t] = self.data['Cash'][t - 1] - self.numberOfShares * self.data['Close'][t] * (1 + self.transactionCosts)
                 self.data['Holdings'][t] = self.numberOfShares * self.data['Close'][t]
                 self.data['Action'][t] = 1
             # Case c: Short -> Long
             else:
                 self.data['Cash'][t] = self.data['Cash'][t - 1] - self.numberOfShares * self.data['Close'][t] * (1 + self.transactionCosts)
-                self.numberOfShares = math.floor(self.data['Cash'][t]/(self.data['Close'][t] * (1 + self.transactionCosts)))
+                self.numberOfShares = self.rounding(self.data['Cash'][t]/(self.data['Close'][t] * (1 + self.transactionCosts)))
                 self.data['Cash'][t] = self.data['Cash'][t] - self.numberOfShares * self.data['Close'][t] * (1 + self.transactionCosts)
                 self.data['Holdings'][t] = self.numberOfShares * self.data['Close'][t]
                 self.data['Action'][t] = 1
@@ -151,21 +160,21 @@ class TradingEnv(gym.Env):
                     self.data['Cash'][t] = self.data['Cash'][t - 1]
                     self.data['Holdings'][t] =  - self.numberOfShares * self.data['Close'][t]
                 else:
-                    numberOfSharesToBuy = min(math.floor(lowerBound), self.numberOfShares)
+                    numberOfSharesToBuy = min(self.rounding(lowerBound), self.numberOfShares)
                     self.numberOfShares -= numberOfSharesToBuy
                     self.data['Cash'][t] = self.data['Cash'][t - 1] - numberOfSharesToBuy * self.data['Close'][t] * (1 + self.transactionCosts)
                     self.data['Holdings'][t] =  - self.numberOfShares * self.data['Close'][t]
                     customReward = True
             # Case b: No position -> Short
             elif(self.data['Position'][t - 1] == 0):
-                self.numberOfShares = math.floor(self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts)))
+                self.numberOfShares = self.rounding(self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts)))
                 self.data['Cash'][t] = self.data['Cash'][t - 1] + self.numberOfShares * self.data['Close'][t] * (1 - self.transactionCosts)
                 self.data['Holdings'][t] = - self.numberOfShares * self.data['Close'][t]
                 self.data['Action'][t] = -1
             # Case c: Long -> Short
             else:
                 self.data['Cash'][t] = self.data['Cash'][t - 1] + self.numberOfShares * self.data['Close'][t] * (1 - self.transactionCosts)
-                self.numberOfShares = math.floor(self.data['Cash'][t]/(self.data['Close'][t] * (1 + self.transactionCosts)))
+                self.numberOfShares = self.rounding(self.data['Cash'][t]/(self.data['Close'][t] * (1 + self.transactionCosts)))
                 self.data['Cash'][t] = self.data['Cash'][t] + self.numberOfShares * self.data['Close'][t] * (1 - self.transactionCosts)
                 self.data['Holdings'][t] = - self.numberOfShares * self.data['Close'][t]
                 self.data['Action'][t] = -1
@@ -204,12 +213,12 @@ class TradingEnv(gym.Env):
                 otherCash = self.data['Cash'][t - 1]
                 otherHoldings = numberOfShares * self.data['Close'][t]
             elif(self.data['Position'][t - 1] == 0):
-                numberOfShares = math.floor(self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts)))
+                numberOfShares = self.rounding(self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts)))
                 otherCash = self.data['Cash'][t - 1] - numberOfShares * self.data['Close'][t] * (1 + self.transactionCosts)
                 otherHoldings = numberOfShares * self.data['Close'][t]
             else:
                 otherCash = self.data['Cash'][t - 1] - numberOfShares * self.data['Close'][t] * (1 + self.transactionCosts)
-                numberOfShares = math.floor(otherCash/(self.data['Close'][t] * (1 + self.transactionCosts)))
+                numberOfShares = self.rounding(otherCash/(self.data['Close'][t] * (1 + self.transactionCosts)))
                 otherCash = otherCash - numberOfShares * self.data['Close'][t] * (1 + self.transactionCosts)
                 otherHoldings = numberOfShares * self.data['Close'][t]
         else:
@@ -220,18 +229,18 @@ class TradingEnv(gym.Env):
                     otherCash = self.data['Cash'][t - 1]
                     otherHoldings =  - numberOfShares * self.data['Close'][t]
                 else:
-                    numberOfSharesToBuy = min(math.floor(lowerBound), numberOfShares)
+                    numberOfSharesToBuy = min(self.rounding(lowerBound), numberOfShares)
                     numberOfShares -= numberOfSharesToBuy
                     otherCash = self.data['Cash'][t - 1] - numberOfSharesToBuy * self.data['Close'][t] * (1 + self.transactionCosts)
                     otherHoldings =  - numberOfShares * self.data['Close'][t]
                     customReward = True
             elif(self.data['Position'][t - 1] == 0):
-                numberOfShares = math.floor(self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts)))
+                numberOfShares = self.rounding(self.data['Cash'][t - 1]/(self.data['Close'][t] * (1 + self.transactionCosts)))
                 otherCash = self.data['Cash'][t - 1] + numberOfShares * self.data['Close'][t] * (1 - self.transactionCosts)
                 otherHoldings = - numberOfShares * self.data['Close'][t]
             else:
                 otherCash = self.data['Cash'][t - 1] + numberOfShares * self.data['Close'][t] * (1 - self.transactionCosts)
-                numberOfShares = math.floor(otherCash/(self.data['Close'][t] * (1 + self.transactionCosts)))
+                numberOfShares = self.rounding(otherCash/(self.data['Close'][t] * (1 + self.transactionCosts)))
                 otherCash = otherCash + numberOfShares * self.data['Close'][t] * (1 - self.transactionCosts)
                 otherHoldings = - self.numberOfShares * self.data['Close'][t]
         otherMoney = otherHoldings + otherCash
@@ -249,6 +258,7 @@ class TradingEnv(gym.Env):
 
         # Return the trading environment feedback to the RL trading agent
         return self.state, self.reward, self.done, self.info
+
 
     def animate(self, i):
         self.plotClose.append(self.data['Close'][len(self.plotClose)])
@@ -275,14 +285,17 @@ class TradingEnv(gym.Env):
         self.ax2.plot(plotAction.loc[plotAction == -1.0].index,
                  plotMoney[plotAction == -1.0],
                  'v', markersize=5, color='red')
-
     def render(self):
         """
         GOAL: Illustrate graphically the trading activity, by plotting
               both the evolution of the stock market price and the
               evolution of the trading capital. All the trading decisions
               (long and short positions) are displayed as well.
+
+              No animation
+
         INPUTS: /
+
         OUTPUTS: /
         """
 
@@ -313,3 +326,31 @@ class TradingEnv(gym.Env):
         ax1.legend(["Price", "Long",  "Short"])
         ax2.legend(["Capital", "Long", "Short"])
         plt.savefig(os.path.join('Figures', self.name+'_Rendering.png'))
+    def render_new(self):
+        """
+        GOAL: Illustrate graphically the trading activity, by plotting
+              both the evolution of the stock market price and the
+              evolution of the trading capital. All the trading decisions
+              (long and short positions) are displayed as well.
+
+              With animation.
+
+        INPUTS: /
+
+        OUTPUTS: /
+        """
+        writergif = animation.PillowWriter(fps=30)
+
+        # Set the Matplotlib figure and subplots
+        self.fig = plt.figure(figsize=(10, 8))
+        self.plotClose = []
+        self.plotAction = []
+        self.plotMoney = []
+        self.ax1 = self.fig.add_subplot(211, ylabel='Price', xlabel='Time')
+        self.ax2 = self.fig.add_subplot(212, ylabel='Capital', xlabel='Time', sharex=self.ax1)
+        # Generation of the two legends and plotting
+        self.ax1.legend(["Price", "Long",  "Short"])
+        self.ax2.legend(["Capital", "Long", "Short"])
+
+        ani = animation.FuncAnimation(self.fig, self.animate, frames=len(self.data)-1, interval=200, repeat_delay=5000)
+        ani.save(os.path.join('Figures', self.name+'_Rendering.gif'), writer=writergif)
