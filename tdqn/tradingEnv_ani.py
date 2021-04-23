@@ -5,8 +5,10 @@ import math
 import numpy as np
 import pandas as pd
 pd.options.mode.chained_assignment = None
+import matplotlib
 from matplotlib import pyplot as plt
-pd.options.mode.chained_assignment = None
+import matplotlib.animation as animation
+matplotlib.use("Agg")
 
 class TradingEnv(gym.Env):
     # GOAL: Implement a custom trading environment compatible with OpenAI Gym.
@@ -452,6 +454,59 @@ class TradingEnv(gym.Env):
         self.info = {'State' : otherState, 'Reward' : otherReward, 'Done' : self.done}
         return self.state, self.reward, self.done, self.info
 
+    def animate(self, i):
+        self.plotClose.append(self.data['Close'][len(self.plotClose)])
+        self.plotAction.append(self.data['Action'][len(self.plotAction)])
+        self.plotMoney.append(self.data['Money'][len(self.plotMoney)])
+        plotClose = pd.Series(self.plotClose)
+        plotAction = pd.Series(self.plotAction)
+        plotMoney = pd.Series(self.plotMoney)
+
+        # Plot the first graph -> Evolution of the stock market price
+        plotClose.plot(ax=self.ax1, color='blue', lw=2)
+        self.ax1.plot(plotAction.loc[plotAction == 1.0].index,
+                 plotClose[plotAction == 1.0],
+                 '^', markersize=5, color='green')
+        self.ax1.plot(plotAction.loc[plotAction == -1.0].index,
+                 plotClose[plotAction == -1.0],
+                 'v', markersize=5, color='red')
+
+        # Plot the second graph -> Evolution of the trading capital
+        plotMoney.plot(ax=self.ax2, color='blue', lw=2)
+        self.ax2.plot(plotAction.loc[plotAction == 1.0].index,
+                 plotMoney[plotAction == 1.0],
+                 '^', markersize=5, color='green')
+        self.ax2.plot(plotAction.loc[plotAction == -1.0].index,
+                 plotMoney[plotAction == -1.0],
+                 'v', markersize=5, color='red')
+
+    def render_n(self):
+        """
+        GOAL: Illustrate graphically the trading activity, by plotting
+              both the evolution of the stock market price and the
+              evolution of the trading capital. All the trading decisions
+              (long and short positions) are displayed as well.
+
+        INPUTS: /
+
+        OUTPUTS: /
+        """
+        # writervideo = animation.FFMpegWriter(fps=60)
+        writergif = animation.PillowWriter(fps=30)
+
+        # Set the Matplotlib figure and subplots
+        self.fig = plt.figure(figsize=(10, 8))
+        self.plotClose = []
+        self.plotAction = []
+        self.plotMoney = []
+        self.ax1 = self.fig.add_subplot(211, ylabel='Price', xlabel='Time')
+        self.ax2 = self.fig.add_subplot(212, ylabel='Capital', xlabel='Time', sharex=self.ax1)
+        # Generation of the two legends and plotting
+        self.ax1.legend(["Price", "Long",  "Short"])
+        self.ax2.legend(["Capital", "Long", "Short"])
+
+        ani = animation.FuncAnimation(self.fig, self.animate, frames=len(self.data)-1, interval=200, repeat_delay=5000)
+        ani.save(os.path.join('Figures', self.name+'_Rendering.gif'), writer=writergif)
 
     def render(self):
         """
@@ -493,7 +548,7 @@ class TradingEnv(gym.Env):
         ax2.legend(["Capital", "Long", "Short"])
         plt.savefig(os.path.join('Figures', self.name+'_Rendering.png'))
 
-def setStartingPoint(self, startingPoint):
+    def setStartingPoint(self, startingPoint):
         """
         GOAL: Setting an arbitrary starting point regarding the trading activity.
               This technique is used for better generalization of the RL agent.

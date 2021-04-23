@@ -11,7 +11,7 @@ from exploratoryDataAnalysis import ExploratoryDataAnalysis
 
 # define default variables
 numOfFeatures = 6 # reduce state
-actionSpace = 11
+actionSpace = 3
 bounds = [1, 30]
 step = 1
 cryptocurrencies = {

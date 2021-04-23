@@ -279,7 +279,7 @@ class TDQN:
         self.targetNetwork.eval()
 
         # Set the Deep Learning optimizer
-        self.optimizer = optim.Adam(self.policyNetwork.parameters(), lr=learningRate, weight_decay=L2Factor)
+        self.optimizer = optim.AdamW(self.policyNetwork.parameters(), lr=learningRate, weight_decay=L2Factor)
 
         # Set the Epsilon-Greedy exploration technique
         self.epsilonValue = lambda iteration: epsilonEnd + (epsilonStart - epsilonEnd) * math.exp(-1 * iteration / epsilonDecay)
@@ -479,7 +479,7 @@ class TDQN:
             if(random.random() > alpha):
                 action, Q, QValues = self.chooseAction(state)
             else:
-                action = 5 # 5th element = 0
+                action = self.actionSpace // 2  # middle element = 0
                 Q = 0
                 QValues = [0 for i in range(self.actionSpace)]
 
@@ -608,6 +608,7 @@ class TDQN:
                     coefficients = self.getNormalizationCoefficients(trainingEnvList[i])
                     trainingEnvList[i].reset()
                     startingPoint = random.randrange(len(trainingEnvList[i].data.index))
+                    # trainingEnvList[i].setStartingPoint(startingPoint)
                     state = self.processState(trainingEnvList[i].state, coefficients)
                     previousAction = 0
                     done = 0
@@ -632,7 +633,7 @@ class TDQN:
                         self.replayMemory.push(state, action, reward, nextState, done)
 
                         # # Trick for better exploration
-                        # otherAction = int(not bool(action))
+                        # otherAction = self.actionSpace - 1 - action
                         # otherReward = self.processReward(info['Reward'])
                         # otherNextState = self.processState(info['State'], coefficients)
                         # otherDone = info['Done']
