@@ -13,7 +13,6 @@ GPUNumber = 0
 #################### ConvDuelingDQN ####################
 ########################################################
 
-# https://github.com/dxyang/DQN_pytorch
 class ConvDuelingDQN(nn.Module):
     def __init__(self, in_channels, h, w, num_actions, dropout):
         super(ConvDuelingDQN, self).__init__()

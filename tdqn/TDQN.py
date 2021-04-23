@@ -268,12 +268,6 @@ class TDQN:
         elif (network=="LSTM"):
             self.policyNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, actionSpace, dropout).to(self.device)
             self.targetNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, actionSpace, dropout).to(self.device)
-        elif (network=="BiLSTM"):
-            self.policyNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 3, actionSpace).to(self.device)
-            self.targetNetwork = className(stateLength-1, numOfFeatures, numberOfNeurons, 3, actionSpace).to(self.device)
-        elif (network=="DuelingDQN"):
-            self.policyNetwork = className(observationSpace, actionSpace, dropout).to(self.device)
-            self.targetNetwork = className(observationSpace, actionSpace, dropout).to(self.device)
         elif (network=="ConvDuelingDQN"):
             self.policyNetwork = className(1, stateLength-1, numOfFeatures, actionSpace, dropout).to(self.device)
             self.targetNetwork = className(1, stateLength-1, numOfFeatures, actionSpace, dropout).to(self.device)
@@ -283,7 +277,7 @@ class TDQN:
         self.targetNetwork.eval()
 
         # Set the Deep Learning optimizer
-        self.optimizer = optim.Adam(self.policyNetwork.parameters(), lr=learningRate, weight_decay=L2Factor)
+        self.optimizer = optim.AdamW(self.policyNetwork.parameters(), lr=learningRate, weight_decay=L2Factor)
 
         # Set the Epsilon-Greedy exploration technique
         self.epsilonValue = lambda iteration: epsilonEnd + (epsilonStart - epsilonEnd) * math.exp(-1 * iteration / epsilonDecay)

@@ -16,7 +16,6 @@ bounds = [1, 30]
 step = 1
 cryptocurrencies = {
     'Bitcoin': 'btc',
-    'Ethereum': 'eth',
 }
 strategies = {
     'Buy and Hold' : 'BuyAndHold',
@@ -35,7 +34,9 @@ class TradingSimulator:
                 -aiTrain(self, strategyName, cryptocurrencyName, PARAM, verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True)
                 -aiTrainWithCrossValidation(self, strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM, verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True)
                 -nonAiTrain(self, strategyName, cryptocurrencyName, PARAM, verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True)
+                -aiTrainWithCrossValidation(self, strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM, verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True)
                 -test(self, strategyName, trainCryptocurrencyName, testCryptocurrencyName, TRAIN_PARAM, TEST_PARAM, rendering=True, showPerformance=True)
+                -randomizedSearchOptimization(self, strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM, HYPERPARAM, numOfTrials, verbose=True, plotTraining=True, rendering=True, showPerformance=True, saveStrategy=True):
     """
 
 
@@ -420,18 +421,3 @@ class TradingSimulator:
             TRAIN_PARAM['L2Factor'] = L2Factors[i]
             print(f"gamma: {gammas[i]}, learningRate: {learningRates[i]}, dropout: {dropouts[i]},\nepsilonDecay: {epsilonDecays[i]}, alpha: {alphas[i]}, L2Factor: {L2Factors[i]}")
             self.aiTrainWithCrossValidation(strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM)
-
-        # for gamma in gammas:
-        #     for learningRate in learningRates:
-        #         for dropout in dropouts:
-        #             for epsilonDecay in epsilonDecays:
-        #                 for alpha in alphas:
-        #                     for L2Factor in L2Factors:
-        #                         TRAIN_PARAM['gamma'] = gamma
-        #                         TRAIN_PARAM['learningRate'] = learningRate
-        #                         TRAIN_PARAM['dropout'] = dropout
-        #                         TRAIN_PARAM['epsilonDecay'] = epsilonDecay
-        #                         TRAIN_PARAM['alpha'] = alpha
-        #                         TRAIN_PARAM['L2Factor'] = L2Factor
-        #                         print(f"gamma: {gamma}, learningRate: {learningRate}, dropout: {dropout},\nepsilonDecay: {epsilonDecay}, alpha: {alpha}, L2Factor: {L2Factor}")
-        #                         self.aiTrainWithCrossValidation(strategyName, cryptocurrencyName, TRAIN_PARAM, VALIDATION_PARAM)
