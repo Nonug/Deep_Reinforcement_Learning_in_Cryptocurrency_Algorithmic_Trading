@@ -111,13 +111,13 @@ classicalStrats = {
     'Trend Following Moving Averages' : 'tfma',
     'Mean Reversion Moving Averages' : 'mrma'
 }
-AI = ['DQN', 'LSTM', 'ConvDuelingDQN', 'DuelingDQN']
+AI = ['DQN', 'LSTM', 'ConvDuelingDQN']
 
-def backtestAI(network, animation = False):
+def backtestAI(network,name = "", animation = False):
     AI_TRAINING_PARAM['network'] = network
-    AI_TRAINING_PARAM['name'] = 'btc_tdqn_' + network + '_training'
+    AI_TRAINING_PARAM['name'] = 'btc_tdqn_' + network + '_' + name + '_training'
 
-    BACKTEST_PARAM['name'] = 'btc_tdqn_' + network + '_backtest'
+    BACKTEST_PARAM['name'] = 'btc_tdqn_' + network + '_' + name + '_backtest'
     BACKTEST_PARAM['network'] = network
 
     strategy = "TDQN"
@@ -125,28 +125,39 @@ def backtestAI(network, animation = False):
     simulator.test(strategy, trainCryptocurrency, testCryptocurrency, AI_TRAINING_PARAM, BACKTEST_PARAM)
     print()
 
-def testAI(network, animation = False):
+def testAI(network,name = "", animation = False):
     AI_TRAINING_PARAM['network'] = network
-    AI_TRAINING_PARAM['name'] = 'btc_tdqn_' + network + '_training'
+    AI_TRAINING_PARAM['name'] = 'btc_tdqn_' + network + '_' + name + '_training'
 
-    TEST_PARAM['name'] = 'btc_tdqn_' + network + '_test'
+    TEST_PARAM['name'] = 'btc_tdqn_' + network + '_' + name + '_test'
     TEST_PARAM['network'] = network
 
     strategy = "TDQN"
 
-    simulator.test(strategy, trainCryptocurrency, testCryptocurrency, AI_TRAINING_PARAM, TEST_PARAM)
+    simulator.test(strategy, trainCryptocurrency, testCryptocurrency, AI_TRAINING_PARAM, TEST_PARAM,suffix = name)
     print()
 
-def test(strategy, animation = False):
+def train(strategy, animation = False):
 
     if strategy not in classical:
         print('strategy given is not valid')
         return
 
-    NON_AI_TRAINING_PARAM['name'] = 'btc_b&h_training'
+    NON_AI_TRAINING_PARAM['name'] = 'btc_' + classicalStrats[strategy] + '_training'
     NON_AI_TRAINING_PARAM['network'] = ''
     simulator.nonAiTrain(strategy, trainCryptocurrency, NON_AI_TRAINING_PARAM)
     print()
+
+# def test(strategy, animation = False):
+#
+#     if strategy not in classical:
+#         print('strategy given is not valid')
+#         return
+#
+#     NON_AI_TRAINING_PARAM['name'] = 'btc_' + classicalStrats[strategy] + '_training'
+#     NON_AI_TRAINING_PARAM['network'] = ''
+#     simulator.test(strategy, trainCryptocurrency, NON_AI_TRAINING_PARAM)
+#     print()
 
 def backtest(strategy, animation = False):
 
