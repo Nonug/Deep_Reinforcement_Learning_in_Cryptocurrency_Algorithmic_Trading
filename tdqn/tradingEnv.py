@@ -128,8 +128,12 @@ class TradingEnv(gym.Env):
         numberOfShares = self.numberOfShares
         customReward = False
 
-        # Uniformly distributed entry price
-        price = np.random.uniform(self.data['Low'][t], self.data['High'][t])
+        price = self.data['Close'][t]
+
+        # Uniformly distributed entry price (for testing consistency, it is commented)
+        # np.random.seed = 3359
+        # price = np.random.uniform(self.data['Low'][t], self.data['High'][t])
+
 
         # CASE 1: LONG POSITION
         if(action == 1):
