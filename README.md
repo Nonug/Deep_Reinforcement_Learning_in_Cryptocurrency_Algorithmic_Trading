@@ -4,7 +4,7 @@
 
 ### Requirements
 
-matplotlib==3.3.2
+matplotlib==3.3.2<br/>
 tabulate==0.8.9<br/>
 tqdm==4.50.0<br/>
 statsmodels==0.12.1<br/>
