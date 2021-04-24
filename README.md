@@ -5,13 +5,13 @@
 ### Requirements
 
 matplotlib==3.3.2
-tabulate==0.8.9
-tqdm==4.50.0
-statsmodels==0.12.1
-numpy==1.19.5
-pandas==1.1.2
-torch==1.7.1+cu110
-gym==0.17.1
+tabulate==0.8.9<br/>
+tqdm==4.50.0<br/>
+statsmodels==0.12.1<br/>
+numpy==1.19.5<br/>
+pandas==1.1.2<br/>
+torch==1.7.1+cu110<br/>
+gym==0.17.1<br/>
 
 
 ## Usage
