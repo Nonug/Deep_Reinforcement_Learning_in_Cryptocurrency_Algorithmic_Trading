@@ -8,7 +8,7 @@ numpy<br/>
 pandas<br/>
 Matplotlib<br/>
 gym<br/>
-tqdm<br/>
+tqdn<br/>
 tabulate<br/>
 torch<br/>
 tensorboard<br />
