@@ -2,16 +2,17 @@
 
 ## Getting Started
 
-### Prerequisites
+### Requirements
 
-numpy<br/>
-pandas<br/>
-Matplotlib<br/>
-gym<br/>
-tqdn<br/>
-tabulate<br/>
-torch<br/>
-tensorboard<br />
+matplotlib==3.3.2
+tabulate==0.8.9
+tqdm==4.50.0
+statsmodels==0.12.1
+numpy==1.19.5
+pandas==1.1.2
+torch==1.7.1+cu110
+gym==0.17.1
+
 
 ## Usage
 
