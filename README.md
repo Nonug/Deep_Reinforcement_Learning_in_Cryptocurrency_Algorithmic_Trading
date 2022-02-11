@@ -31,8 +31,8 @@ gym==0.17.1<br/>
 ## Authors
 
 - [leehiulong](https://github.com/leehiulong)
-- [e](https://github.com/Nonug) ( Chan Tsz Hei)
 - [johnnycls](https://github.com/johnnycls)
+- [Victor](https://github.com/Nonug)
 
 ## Acknowledgements
 
